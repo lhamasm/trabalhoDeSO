@@ -1,0 +1,23 @@
+header button {
+	margin-right: 1em;
+}
+
+.titulo {
+	font-size: 0.85em;
+}
+
+.vl {
+    border-left: 2px solid white;
+    height: 3em;
+}
+
+.gerenciador-processos {
+	border: 2px solid #f0f0f0;
+	padding: 1em;
+}
+
+.scroll {
+	overflow-y: auto;
+	overflow-x: none;
+	height: 25vw;
+}
