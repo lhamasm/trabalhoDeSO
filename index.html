@@ -37,9 +37,11 @@
 		<div class="container-fluid mt-3">
 			<div class="row px-2">
 				<div class="col-3">
-					<form>
-						<div class="form-group">
-							<label for="escalonamento">Algoritmos de Escalonamento</label>
+					<h5 class="text-center">Algoritmos</h5>
+					<hr>
+					<form class="mb-3">
+						<div class="form-group">						
+							<label for="escalonamento">Escalonamento</label>
 							<select class="form-control custom-select" id="escalonamento" onchange="desabilitar()">
 								<option value="fifo">FIFO</option>
 								<option value="rr">Round Robin</option>
@@ -48,7 +50,7 @@
 							</select>
 						</div>
 						<div class="form-group">
-							<label for="paginacao">Algoritmos de Substituição de Páginas</label>
+							<label for="paginacao">Substituição de Páginas</label>
 							<select class="form-control custom-select"  id="paginacao">
 								<option>FIFO</option>
 								<option>MRU</option>
@@ -70,52 +72,52 @@
 						</div>
 					</form>
 
-					<h6 class="text-center">Gerenciador de Processos</h6>
+					<h5 class="text-center">Gerenciador de Processos</h5>
+					<hr>
 					<div class="row">
 						<div class="col-8 scroll mt-2">
-							<div class="container-fluid">
-								<table class="table-hover table-sm text-dark">
-									<thead>
-										<tr>
-											<th>COR</th>
-											<th>PID</th>
-											<th>TC</th>
-											<th>TE</th>
-											<th>TR</th>
-											<th>DD</th>
-											<th>PRIO</th>
-										</tr>
-									</thead>
-									<tbody>
-										<tr>
-											<td class="bg-danger"></td>
-											<td>1</td>
-											<td>1</td>
-											<td>1</td>
-											<td>1</td>
-											<td>1</td>
-											<td>1</td>
-										</tr>
-										<tr>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-										</tr>
-									</tbody>
-								</table>
-							</div>
+							<table class="table-hover table-sm text-dark">
+								<thead>
+									<tr>
+										<th>COR</th>
+										<th>PID</th>
+										<th>TC</th>
+										<th>TE</th>
+										<th>TR</th>
+										<th>DD</th>
+										<th>PRIO</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td class="bg-danger"></td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+									</tr>
+									<tr>
+										<td></td>
+										<td></td>
+										<td></td>
+										<td></td>
+										<td></td>
+										<td></td>
+										<td></td>
+									</tr>
+								</tbody>
+							</table>
 						</div>
+
 						<div class="col-4 mt-2">
-							<button class="btn btn-block btn-midnight" type="button" style="font-size: 0.8em;"><strong>Criar</strong></button>
-							<button class="btn btn-block btn-midnight" type="button" style="font-size: 0.8em;"><strong>Suspender</strong></button>
-							<button class="btn btn-block btn-midnight" type="button" style="font-size: 0.8em;"><strong>Prosseguir</strong></button>
-							<button class="btn btn-block btn-midnight" type="button" style="font-size: 0.8em;"><strong>Finalizar</strong></button>
-							<button class="btn btn-block btn-midnight" type="button" style="font-size: 0.8em;"><strong>Prioridade</strong></button>
-							<button class="btn btn-block btn-midnight" type="button" style="font-size: 0.8em;"><strong>PCB</strong></button>
+							<button class="btn btn-block btn-midnight" type="button" style="font-size: 0.7em;"><strong>Criar</strong></button>
+							<button class="btn btn-block btn-midnight" type="button" style="font-size: 0.7em;"><strong>Suspender</strong></button>
+							<button class="btn btn-block btn-midnight" type="button" style="font-size: 0.7em;"><strong>Prosseguir</strong></button>
+							<button class="btn btn-block btn-midnight" type="button" style="font-size: 0.7em;"><strong>Finalizar</strong></button>
+							<button class="btn btn-block btn-midnight" type="button" style="font-size: 0.7em;"><strong>Prioridade</strong></button>
+							<button class="btn btn-block btn-midnight" type="button" style="font-size: 0.7em;"><strong>PCB</strong></button>
 						</div>
 					</div>
 				</div>
