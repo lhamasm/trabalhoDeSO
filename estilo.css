@@ -27,14 +27,15 @@ header button {
 
 .scroll {
 	overflow-y: auto;
-	height: 5em;
+	overflow-x: none;
+	height: 14em;
 }
 
 table, th, td {
 	font-size: 0.83em;
 	text-align: center;
 	border: 1.5px solid #696969;
-	margin: 0;
+	width: 14em;
 }
 
 .btn-midnight {
