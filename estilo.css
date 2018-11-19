@@ -16,6 +16,7 @@ header button {
 	border-radius: 1em;
 	background-color: rgba(200, 200, 200);
 	padding: 1em;
+	height: 25vw;
 }
 
 .gerenciador-processador {
@@ -36,6 +37,7 @@ table, th, td {
 	text-align: center;
 	border: 1.5px solid #696969;
 	width: 14em;
+	color: white;
 }
 
 .btn-midnight {
@@ -45,6 +47,43 @@ table, th, td {
 
 .btn-midnight:hover {
 	background-color: #6495ED;
+}
+
+ /* The side navigation menu */
+.sidenav {
+    height: 100%; /* 100% Full-height */
+    width: 0; /* 0 width - change this with JavaScript */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Stay on top */
+    left: 0;
+    overflow-x: hidden; /* Disable horizontal scroll */
+    transition: 0.5s; /* 0.5 second transition effect to slide in the sidenav */
+}
+
+/* Style page content - use this if you want to push the page content to the right when you open the side navigation */
+#main {
+    transition: margin-left .5s;
+    padding: 20px;
+}
+
+/* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
+@media screen and (max-height: 450px) {
+    .sidenav {padding-top: 15px;}
+    .sidenav a {font-size: 18px;}
+} 
+
+@font-face {
+	font-family: robotoBold;
+	src: url(Roboto-Bold.ttf);
+}
+
+#mySidenav h5, #mySidenav label {
+	color: white;
+	font-family: robotoBold;
+}
+
+hr {
+	background-color: #C0C0C0;
 }
 
 

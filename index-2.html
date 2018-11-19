@@ -1,0 +1,362 @@
+<!doctype html>
+
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="view-port" content="width=width-device, initial-scale=1.0, shrink-to-fit=no">
+		<title>Trabalho de Sistemas Operacionais</title>
+
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
+
+		<link rel="stylesheet" type="text/css" href="estilo.css">
+
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-animate.js"></script>
+
+
+	</head>
+
+	<body>
+
+		<header>
+			<nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+				<div class="container-fluid">
+					<form class="form-inline">
+						<button class="btn btn-outline-dark control" type="button" onclick="openNav()"><i class="text-light fas fa-bars"></i></button>
+						<div class="vl"></div>
+						<button class="btn btn-success ml-4" type="button" onclick="run()"><i class="fas fa-play"></i></button>
+						<button class="btn btn-danger" type="button"><i class="fas fa-stop" onclick="stop()"></i></button>
+					</form>
+					<ul class="navbar-nav">
+						<li class="nav-item ml-5"><a class="nav-link" href="#">TEMPO</a></li>
+						<li class="nav-item ml-5"><a class="nav-link" href="#">PROCESSOS</a></li>
+						<li class="nav-item ml-5"><a class="nav-link" href="#">MEMÓRIA LIVRE</a></li>
+					</ul>
+				</div>
+			</nav>
+		</header>
+
+		<div id="mySidenav" class="sidenav pt-3 bg-dark">
+			<h5 class="text-center">Algoritmos</h5>
+			<hr class="mx-3">
+			<form class="p-3">
+				<div class="form-group">	
+					<div class="row">	
+						<div class="col-6">				
+							<label for="escalonamento">Escalonamento</label>
+							<select class="form-control custom-select" id="escalonamento" onchange="desabilitar()" style="font-size:0.9em;">
+								<option value="fifo">FIFO</option>
+								<option value="rr">Round Robin</option>
+								<option value="edf">EDF</option>
+								<option value="sjf">SJF</option>
+							</select>
+						</div>
+						<div class="col-6">
+							<label for="paginacao">Paginação</label>
+							<select class="form-control custom-select"  id="paginacao" style="font-size:0.9em;">
+								<option>FIFO</option>
+								<option>MRU</option>
+							</select>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-6">
+						<div class="form-group">
+							<label for="quantum">Quantum</label>
+							<input class="form-control" type="number" id="quantum" min="1" style="font-size:0.9em;">
+						</div>
+					</div>
+					<div class="col-6">
+						<div class="form-group">
+							<label for="sobrecarga">Sobrecarga</label>
+							<input class="form-control" type="number" id="sobrecarga" min="1" max="5" style="font-size:0.9em;">
+						</div>
+					</div>
+				</div>
+			</form>
+
+			<h5 class="text-center">Gerenciador de Processos</h5>
+			<hr class="mx-3">
+			<div class="row p-3">
+				<span class="col-8 scroll mt-2">
+					<table class="table-hover table-sm text-dark">
+						<thead>
+							<tr>
+								<th>COR</th>
+								<th>PID</th>
+								<th>TC</th>
+								<th>TE</th>
+								<th>TR</th>
+								<th>DD</th>
+								<th title="PRIORIDADE">PR</th>
+							</tr>
+						</thead>
+						<tbody id="tabela-processos">
+						</tbody>
+					</table>
+				</span>
+
+				<div class="col-4 mt-2">
+					<button class="btn btn-block btn-midnight" type="button" data-toggle="modal" data-target="#criar-processo" style="font-size: 0.7em;"><strong>Criar</strong></button>
+					<button class="btn btn-block btn-midnight" type="button" style="font-size: 0.7em;"><strong>Suspender</strong></button>
+					<button class="btn btn-block btn-midnight" type="button" style="font-size: 0.7em;"><strong>Prosseguir</strong></button>
+					<button class="btn btn-block btn-midnight" type="button" style="font-size: 0.7em;"><strong>Finalizar</strong></button>
+					<button class="btn btn-block btn-midnight" type="button" style="font-size: 0.7em;"><strong>Prioridade</strong></button>
+					<button class="btn btn-block btn-midnight" type="button" style="font-size: 0.7em;"><strong>PCB</strong></button>
+				</div>
+			</div>
+		</div>
+
+		
+		<div id="main">
+			<div id="criar-processo" class="modal fade">
+				<div class="modal-dialog modal-dialog-centered" style="width: 25em;">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h4 class="modal-title">Criar Processo</h4>
+							<button type="button" class="close" data-dismiss="modal">&times</button>
+						</div>
+
+						<div class="modal-body">
+							<form>
+								<div class="form-group">
+									<div class="row">
+										<div class="col-6">
+											<label for="tempo-chegada">Tempo de Chegada</label>
+											<input type="number" class="form-control" id="tempo-chegada" min="0"> 
+										</div>
+										<div class="col-6">
+											<label for="prioridade">Prioridade</label>
+											<input type="number" class="form-control" id="prioridade" min="0"> 
+										</div>
+									</div>
+
+									<div class="row">
+										<div class="col-6">
+											<label for="tempo-execucao">Tempo de Execução</label>
+											<input type="number" class="form-control" id="tempo-execucao" min="0"> 
+										</div>
+										<div class="col-6">
+											<label for="deadline">Deadline</label>
+											<input type="number" class="form-control" id="deadline" min="0"> 
+										</div>
+									</div>
+								</div>
+							</form>
+						</div>
+
+						<div class="modal-footer">
+							<button class="btn btn-success" type="submit" data-dismiss="modal" onclick="criar_processo()">Confirmar</button>
+							<button class="btn btn-info" type="submit" onclick="criar_processo()">Confirmar e Criar Outro</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-5">
+					<div class="gerenciador-processador shadow" ng-app="ngAnimate">
+						<h6 class="text-center">Gerenciador do Processador</h6>
+
+						<div class="row">
+
+							<div id="cpu" class="col-4">
+
+							</div>
+
+							<div id="i/o" class="col-4">
+
+							</div>
+
+							<div id="prontos" class="offset-2 col-1 shadow">
+								
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="col-4">
+					<div class="gerenciador-processador shadow">
+						<h6 class="text-center">Seção 2</h6>
+					</div>
+				</div>
+
+				<div class="col-3">
+					<div class="gerenciador-processador shadow">
+						<h6 class="text-center">Seção 3</h6>
+					</div>
+				</div>
+			</div>
+
+			<div class="row mt-3">
+				<div class="col-3 bg-danger">
+					kkkkkkkk
+				</div>
+				<div class="col-9 bg-info">
+					klkkkkkkkkkkkkkkk
+				</div>
+			</div>
+			<div class="row mt-2">
+				<div class="col-3 bg-danger">
+					kkkkkkkk
+				</div>
+				<div class="col-9 bg-info">
+					klkkkkkkkkkkkkkkk
+				</div>
+			</div>
+			<div class="row mt-2">
+				<div class="col-3 bg-danger">
+					kkkkkkkk
+				</div>
+				<div class="col-9 bg-info">
+					klkkkkkkkkkkkkkkk
+				</div>
+			</div>
+			<div class="row mt-2">
+				<div class="col-3 bg-danger">
+					kkkkkkkk
+				</div>
+				<div class="col-9 bg-info">
+					klkkkkkkkkkkkkkkk
+				</div>
+			</div>
+			<div class="row mt-2">
+				<div class="col-3 bg-danger">
+					kkkkkkkk
+				</div>
+				<div class="col-9 bg-info">
+					klkkkkkkkkkkkkkkk
+				</div>
+			</div>
+			<div class="row mt-2">
+				<div class="col-3 bg-danger">
+					kkkkkkkk
+				</div>
+				<div class="col-9 bg-info">
+					klkkkkkkkkkkkkkkk
+				</div>
+			</div>
+			<div class="row mt-2">
+				<div class="col-3 bg-danger">
+					kkkkkkkk
+				</div>
+				<div class="col-9 bg-info">
+					klkkkkkkkkkkkkkkk
+				</div>
+			</div>
+			<div class="row mt-2">
+				<div class="col-3 bg-danger">
+					kkkkkkkk
+				</div>
+				<div class="col-9 bg-info">
+					klkkkkkkkkkkkkkkk
+				</div>
+			</div>
+		</div> 
+
+		<script type="text/javascript">
+			let PID = 1;
+			let temporestante = 0;
+			let seed = 0.753;
+			let FIFO = [];
+			
+			function desabilitar() {
+				if(document.getElementById('escalonamento').value == 'fifo' || document.getElementById('escalonamento').value == 'sjf'){
+					document.getElementById('quantum').readOnly = true;
+					document.getElementById('sobrecarga').readOnly = true;
+				} else {
+					document.getElementById('quantum').readOnly = false;
+					document.getElementById('sobrecarga').readOnly = false;
+				}
+			}
+
+			function random() {
+			   seed /= 1125899839733759;  // um número primo
+			   seed *= 18014398241046527; // outro
+			   seed -= parseInt(seed);         // normalizar
+			   return seed;
+			}
+
+			function aleatorio(inferior,superior){	
+			   numPossibilidades = superior - inferior;
+			   aleat = random() * numPossibilidades;
+			   aleat = Math.floor(aleat);
+			   return parseInt(inferior) + aleat;
+			} 
+
+			function dar_cor_aleatoria(){
+			   hexadecimal = new Array("0","1","2","3","4","5","6","7","8","9","A","B","C","D","E","F");
+			   cor_aleatoria = "#";
+			   for (i=0;i<6;i++){
+			      posarray = aleatorio(0,hexadecimal.length);
+			      cor_aleatoria += hexadecimal[posarray];
+			   }
+			   return cor_aleatoria;
+			}
+
+			function criar_processo() {
+				let cor = dar_cor_aleatoria();
+				document.getElementById('tabela-processos').innerHTML += '<tr><td style="background-color:' + cor + ';"></td><td>' + PID + '</td><td>' + document.getElementById("tempo-chegada").value + '</td><td>' + document.getElementById("tempo-execucao").value + '</td><td>' + temporestante + '</td><td>' + document.getElementById("deadline").value + '</td><td>' + document.getElementById("prioridade").value + '</td></tr>';
+
+					FIFO.push([cor, PID, parseInt(document.getElementById("tempo-execucao").value)]);
+			}
+
+			function openNav() {
+				if(document.getElementById("mySidenav").style.width == "20em"){
+					document.getElementById("mySidenav").style.width = "0";
+				} else {
+					document.getElementById("mySidenav").style.width = "20em";
+				}			    
+			}
+
+			function sleep(miliseconds) {
+			   var currentTime = new Date().getTime();
+
+			   while (currentTime + miliseconds >= new Date().getTime()) {
+			   }
+			}
+
+			function fifo() {
+				while(FIFO.length > 0){
+					let tempo = FIFO[0][2];
+					while(tempo > 0){
+						document.getElementById('cpu').innerHTML = '<i class="fas fa-circle"></i>';
+						setTimeout(function(){tempo--;}, 1000);
+					}
+					FIFO.shift();
+
+					document.getElementById('prontos').innerHTML = ''; 
+					document.getElementById('cpu').innerHTML = ''; 
+
+					if(FIFO.length != 0){
+						for(i = 0; i < FIFO.length; i++){
+							document.getElementById('prontos').innerHTML += '<i class="fas fa-circle"></i>';
+						}
+					}	
+				}
+				alert("Todos os processos foram executados!");
+			}
+
+			function run() {
+				if(FIFO.length != 0 && document.getElementById('escalonamento').value == 'fifo'){
+					for(i = 0; i < FIFO.length; i++){
+						document.getElementById('prontos').innerHTML += '<i class="fas fa-circle"></i>';
+					}
+
+					setTimeout(fifo, 2000);
+				}
+			}
+
+		</script>
+
+		<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+   		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+	</body>
+
+</html>>
