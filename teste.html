@@ -26,7 +26,8 @@
                     <button class="btn btn-outline-dark control" type="button" onclick="sidebar()"><i class="text-light fas fa-bars"></i></button>
                     <div class="vl"></div>
                     <button class="btn btn-success ml-4" type="button" onclick="tempo()"><i class="fas fa-play"></i></button>
-                    <button class="btn btn-danger" type="button" onclick="stop()"><i class="fas fa-pause"></i></i></button>
+                    <button class="btn btn-warning text-white" type="button" onclick="pause()"><i class="fas fa-pause"></i></i></button>
+                    <button class="btn btn-danger" type="button" onclick="stop()"><i class="fas fa-stop"></i></i></button>
                 </form>
                 <ul class="navbar-nav p-2" style="color: #C0C0C0;">
                     <li id="tempo" class="nav-item ml-5 text-center"><span class="" href="#">TEMPO<br>0</span></li>
@@ -96,24 +97,7 @@
                             </tr>
                         </thead>
                         <tbody id="tabela-processos">
-                            <tr>
-                                <td class="bg-danger"></td>
-                                <td>1</td>
-                                <td>1</td>
-                                <td>1</td>
-                                <td>1</td>
-                                <td>1</td>
-                                <td>1</td>
-                            </tr>
-                            <tr>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                            </tr>
+                            
                         </tbody>
                     </table>
                 </span>
@@ -139,38 +123,41 @@
                         <button type="button" class="close" data-dismiss="modal">&times</button>
                     </div>
 
-                    <div class="modal-body">
-                        <form>
+                    <form>
+
+                        <div class="modal-body">
+                            
                             <div class="form-group">
                                 <div class="row">
                                     <div class="col-6">
                                         <label for="tempo-chegada">Tempo de Chegada</label>
-                                        <input type="number" class="form-control" id="tempo-chegada" min="0"> 
+                                        <input type="number" class="form-control" id="tempo-chegada" min="0" required> 
                                     </div>
                                     <div class="col-6">
                                         <label for="prioridade">Prioridade</label>
-                                        <input type="number" class="form-control" id="prioridade" min="0"> 
+                                        <input type="number" class="form-control" id="prioridade" min="0" required> 
                                     </div>
                                 </div>
 
                                 <div class="row">
                                     <div class="col-6">
                                         <label for="tempo-execucao">Tempo de Execução</label>
-                                        <input type="number" class="form-control" id="tempo-execucao" min="0"> 
+                                        <input type="number" class="form-control" id="tempo-execucao" min="0" required> 
                                     </div>
                                     <div class="col-6">
                                         <label for="deadline">Deadline</label>
-                                        <input type="number" class="form-control" id="deadline" min="0"> 
+                                        <input type="number" class="form-control" id="deadline" min="0" required> 
                                     </div>
                                 </div>
                             </div>
-                        </form>
-                    </div>
+                            
+                        </div>
 
-                    <div class="modal-footer">
-                        <button class="btn btn-success" type="submit" data-dismiss="modal" onclick="criar_processo()">Confirmar</button>
-                        <button class="btn btn-info" type="submit" onclick="criar_processo()">Confirmar e Criar Novo</button>
-                    </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-success" type="submit" data-dismiss="modal" onclick="criar_processo()">Confirmar</button>
+                            <button class="btn btn-info" type="submit" onclick="criar_processo()">Confirmar e Criar Novo</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -292,6 +279,14 @@
         let start;
         let processos = 0;
 
+        let tChegada = parseInt(document.getElementById('tempo-chegada').value);
+        let tExecucao = parseInt(document.getElementById('tempo-execucao').value);
+        let prioridade = parseInt(document.getElementById('prioridade').value);
+        let deadline = parseInt(document.getElementById('deadline').value);
+
+        let escalonamento = document.getElementById('escalonamento').value;
+        let paginacao = document.getElementById('paginacao').value;
+
         function tempo() {
             seg++;
 
@@ -301,8 +296,14 @@
             start = setTimeout(tempo, 1000);
         }
 
+        function pause() {
+            clearTimeout(start);
+        }
+
         function stop() {
             clearTimeout(start);
+            seg = 0;
+            document.getElementById('tempo').innerHTML = '<span class="" href="#">TEMPO<br>' + seg + '</span>';
         }
 
         function sleep(miliseconds) {
@@ -351,7 +352,7 @@
         }
         
         function desabilitar() {
-            if(document.getElementById('escalonamento').value == 'fifo' || document.getElementById('escalonamento').value == 'sjf'){
+            if(escalonamento == 'fifo' || escalonamento == 'sjf'){
                 document.getElementById('quantum').readOnly = true;
                 document.getElementById('sobrecarga').readOnly = true;
 
@@ -386,12 +387,15 @@
         }
 
         function criar_processo() {
-            let cor = dar_cor_aleatoria();
-            document.getElementById('tabela-processos').innerHTML += '<tr><td style="background-color:' + cor + ';"></td><td>' + PID + '</td><td>' + document.getElementById("tempo-chegada").value + '</td><td>' + document.getElementById("tempo-execucao").value + '</td><td>' + temporestante + '</td><td>' + document.getElementById("deadline").value + '</td><td>' + document.getElementById("prioridade").value + '</td></tr>';
+            if(tChegada != 0 && tExecucao != 0 && prioridade != 0 && deadline != 0){
+                let cor = dar_cor_aleatoria();
+                document.getElementById('tabela-processos').innerHTML += '<tr><td style="background-color:' + cor + ';"></td><td>' + PID + '</td><td>' + document.getElementById("tempo-chegada").value + '</td><td>' + document.getElementById("tempo-execucao").value + '</td><td>' + temporestante + '</td><td>' + document.getElementById("deadline").value + '</td><td>' + document.getElementById("prioridade").value + '</td></tr>';
 
                 processos++;
+                PID++;
 
-                FIFO.push([cor, PID, parseInt(document.getElementById("tempo-execucao").value)]);
+                FIFO.push([cor, PID, tExecucao]);
+            }
         }
 
         function sidebar() {
@@ -403,7 +407,7 @@
         }
 
         function run() {
-            if(document.getElementById('escalonamento').value == 'fifo') {
+            if(escalonamento == 'fifo') {
                 if(FIFO.length != 0){
                     //código para exibir os processos na fila de pronto
                     for(i=0; i < FIFO.length; i++){
