@@ -114,7 +114,7 @@
         </div>
     </div>
 
-    <div id="main" class="p-4 mt-5">
+    <div id="main" class="p-5 mt-5">
         <div id="criar-processo" class="modal fade">
             <div class="modal-dialog modal-dialog-centered" style="width: 25em; font-family: robotoBold;">
                 <div class="modal-content">
@@ -155,7 +155,7 @@
 
                         <div class="modal-footer">
                             <button class="btn btn-success" type="submit" data-dismiss="modal" onclick="criar_processo()">Confirmar</button>
-                            <button class="btn btn-info" type="submit" onclick="criar_processo()">Confirmar e Criar Novo</button>
+                            <button class="btn btn-info" type="button" onclick="criar_processo()">Confirmar e Criar Novo</button>
                         </div>
                     </form>
                 </div>
@@ -170,15 +170,11 @@
                         <h6 class="text-center">Gerenciador do Processador</h6>
 
                         <div class="row">
-                            <div id="prontos" class="col-4 bg-danger">
-                                <ul>
-                                    <li ng-repeat="x in prontos">
-                                        {{x}}
-                                    </li>
-                                </ul>
+                            <div id="prontos" class="col-4">
+                                
                             </div>
 
-                            <div id="cpu" class="col-4 bg-info">
+                            <div id="cpu" class="col-4">
 
                             </div>
 
@@ -189,14 +185,99 @@
 
                     </div>
                 </div>
-                <div class="col-4">
-                    <div class="gerenciador-processos shadow">
-                        <h6 class="text-center">Teste</h6>
-                    </div>
-                </div>
                 <div class="col-3">
                     <div class="outro shadow">
-                        <h6 class="text-center">Teste</h6>
+                        <h6 class="text-center mb-3">RAM</h6>
+
+                        <table class="table-sm m-auto ">
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                </tr>
+
+                                <tr>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                </tr>
+
+                                <tr>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                </tr>
+
+                                <tr>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                </tr>
+
+                                <tr>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                </tr>
+
+                                <tr>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                </tr>
+
+                                <tr>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                </tr>
+
+                                <tr>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                </tr>
+
+                                <tr>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                </tr>
+
+                                <tr>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="gerenciador-processos shadow">
+                        <h6 class="text-center">Disco</h6>
                     </div>
                 </div>
             </div>
@@ -293,7 +374,7 @@
             document.getElementById('tempo').innerHTML = '<span class="" href="#">TEMPO<br>' + seg + '</span>';
             document.getElementById('processo').innerHTML = '<span class="" href="#">PROCESSOS<br>' + processos + '</span>';
 
-            start = setTimeout(tempo, 1000);
+            start = setTimeout(tempo, 700);
         }
 
         function pause() {
@@ -387,15 +468,13 @@
         }
 
         function criar_processo() {
-            if(tChegada != 0 && tExecucao != 0 && prioridade != 0 && deadline != 0){
-                let cor = dar_cor_aleatoria();
-                document.getElementById('tabela-processos').innerHTML += '<tr><td style="background-color:' + cor + ';"></td><td>' + PID + '</td><td>' + document.getElementById("tempo-chegada").value + '</td><td>' + document.getElementById("tempo-execucao").value + '</td><td>' + temporestante + '</td><td>' + document.getElementById("deadline").value + '</td><td>' + document.getElementById("prioridade").value + '</td></tr>';
+           let cor = dar_cor_aleatoria();
+            document.getElementById('tabela-processos').innerHTML += '<tr><td style="background-color:' + cor + ';"></td><td>' + PID + '</td><td>' + document.getElementById("tempo-chegada").value + '</td><td>' + document.getElementById("tempo-execucao").value + '</td><td>' + temporestante + '</td><td>' + document.getElementById("deadline").value + '</td><td>' + document.getElementById("prioridade").value + '</td></tr>';
 
-                processos++;
-                PID++;
+            processos++;
+            PID++;
 
-                FIFO.push([cor, PID, tExecucao]);
-            }
+            //FIFO.push([cor, PID, tExecucao]);
         }
 
         function sidebar() {
