@@ -29,7 +29,7 @@
                     <button class="btn btn-warning text-white" type="button" onclick="pause()"><i class="fas fa-pause"></i></i></button>
                     <button class="btn btn-danger" type="button" onclick="stop()"><i class="fas fa-stop"></i></i></button>
                 </form>
-                <ul class="navbar-nav p-2" style="color: #C0C0C0;">
+                <ul class="navbar-nav p-1" style="color: #C0C0C0; font-size: 0.85em;">
                     <li id="tempo" class="nav-item ml-5 text-center"><span class="" href="#">TEMPO<br>0</span></li>
                     <li id="processo" class="nav-item ml-5 text-center"><span class="" href="#">PROCESSOS<br>0</span></li>
                     <li class="nav-item ml-5 text-center"><span class="" href="#">MEMÓRIA LIVRE<br>1</span></li>
@@ -114,7 +114,7 @@
         </div>
     </div>
 
-    <div id="main" class="p-5 mt-5">
+    <div id="main" class="pt-5 pl-0 pr-2 mt-4">
         <div id="criar-processo" class="modal fade">
             <div class="modal-dialog modal-dialog-centered" style="width: 25em; font-family: robotoBold;">
                 <div class="modal-content">
@@ -165,189 +165,244 @@
 
         <div class="container-fluid ">
             <div class="row">
-                <div class="col-5" ng-app="gerenciadorProcessador" ng-controller="controller">
-                    <div class="gerenciador-processador shadow">
-                        <h6 class="text-center">Gerenciador do Processador</h6>
+                <div class="col-4">
+                    <div class="gerenciador-processador shadow ">
+                        <h6 class="text-center mb-2">Gerenciador do Processador</h6>
 
-                        <div class="row">
-                            <div class="col-4">
-                                <div class="row bg-danger">
-                                    CPU
-                                </div>
-                            </div>
-
-                            <div class="col-8">
-                                <div class="row bg-info">
-                                    FILA DE PRONTOS
-                                </div>
-
-                                <div class="row bg-primary">
-                                    FILA DE ESPERA
-                                </div>
+                        <p class="text-center">CPU</p>
+                        <div class="row mb-2">
+                            <div class="offset-5 col-2 d-flex justify-content-center" style="height: 3em; border: 2px solid black;" >
+                                <i class="fas fa-circle mt-2" style="font-size: 1.5em; display: none;"></i>
                             </div>
                         </div>
 
-                    </div>
-                </div>
-                <div class="col-3">
-                    <div class="outro shadow">
-                        <h6 class="text-center mb-3">RAM</h6>
+                        <p>PRONTOS</p>
+                        <div class="row mb-3">
+                            <div class="filas ml-3">
+                                <table>
+                                    <tbody>
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>  
+                        </div>
 
-                        <table class="table-sm m-auto ">
-                            <tbody>
-                                <tr>
-                                    <td>1</td>
-                                    <td>1</td>
-                                    <td>1</td>
-                                    <td>1</td>
-                                    <td>1</td>
-                                </tr>
+                        <p>ESPERA</p>
+                        <div class="row mb-3">
+                            <div class="ml-3 filas">
+                                <table>
+                                    <tbody>
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>  
+                        </div>
 
-                                <tr>
-                                    <td>1</td>
-                                    <td>1</td>
-                                    <td>1</td>
-                                    <td>1</td>
-                                    <td>1</td>
-                                </tr>
-
-                                <tr>
-                                    <td>1</td>
-                                    <td>1</td>
-                                    <td>1</td>
-                                    <td>1</td>
-                                    <td>1</td>
-                                </tr>
-
-                                <tr>
-                                    <td>1</td>
-                                    <td>1</td>
-                                    <td>1</td>
-                                    <td>1</td>
-                                    <td>1</td>
-                                </tr>
-
-                                <tr>
-                                    <td>1</td>
-                                    <td>1</td>
-                                    <td>1</td>
-                                    <td>1</td>
-                                    <td>1</td>
-                                </tr>
-
-                                <tr>
-                                    <td>1</td>
-                                    <td>1</td>
-                                    <td>1</td>
-                                    <td>1</td>
-                                    <td>1</td>
-                                </tr>
-
-                                <tr>
-                                    <td>1</td>
-                                    <td>1</td>
-                                    <td>1</td>
-                                    <td>1</td>
-                                    <td>1</td>
-                                </tr>
-
-                                <tr>
-                                    <td>1</td>
-                                    <td>1</td>
-                                    <td>1</td>
-                                    <td>1</td>
-                                    <td>1</td>
-                                </tr>
-
-                                <tr>
-                                    <td>1</td>
-                                    <td>1</td>
-                                    <td>1</td>
-                                    <td>1</td>
-                                    <td>1</td>
-                                </tr>
-
-                                <tr>
-                                    <td>1</td>
-                                    <td>1</td>
-                                    <td>1</td>
-                                    <td>1</td>
-                                    <td>1</td>
-                                </tr>
-                            </tbody>
-                        </table>
 
                     </div>
                 </div>
-                <div class="col-4">
-                    <div class="gerenciador-processos shadow">
-                        <h6 class="text-center">Disco</h6>
+                <div class="col-8">
+                     <div class="row mt-1">
+                        <div class="col-3 bg-danger">
+                            kkkkkkkk
+                        </div>
+                        <div class="col-9 bg-info">
+                            klkkkkkkkkkkkkkkk
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-3 bg-danger">
+                            kkkkkkkk
+                        </div>
+                        <div class="col-9 bg-info">
+                            klkkkkkkkkkkkkkkk
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-3 bg-danger">
+                            kkkkkkkk
+                        </div>
+                        <div class="col-9 bg-info">
+                            klkkkkkkkkkkkkkkk
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-3 bg-danger">
+                            kkkkkkkk
+                        </div>
+                        <div class="col-9 bg-info">
+                            klkkkkkkkkkkkkkkk
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-3 bg-danger">
+                            kkkkkkkk
+                        </div>
+                        <div class="col-9 bg-info">
+                            klkkkkkkkkkkkkkkk
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-3 bg-danger">
+                            kkkkkkkk
+                        </div>
+                        <div class="col-9 bg-info">
+                            klkkkkkkkkkkkkkkk
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-3 bg-danger">
+                            kkkkkkkk
+                        </div>
+                        <div class="col-9 bg-info">
+                            klkkkkkkkkkkkkkkk
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-3 bg-danger">
+                            kkkkkkkk
+                        </div>
+                        <div class="col-9 bg-info">
+                            klkkkkkkkkkkkkkkk
+                        </div>
                     </div>
                 </div>
             </div>
 
             <div class="row mt-3">
-                <div class="col-3 bg-danger">
-                    kkkkkkkk
+
+                <div class="col-4">
+                    <div class="gerenciador-processos shadow">
+                        <h6 class="text-center">Tabela de Páginas</h6>
+                        <div class="row">
+                            <div class="offset-3 col-2 bg-info">
+                                MEMORIA VIRTUAL
+                            </div>
+
+                            <div class="offset-2 col-2 bg-success">
+                                MEMORIA FISICA
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-9 bg-info">
-                    klkkkkkkkkkkkkkkk
+
+                <div class="col-4">
+                    <div class="gerenciador-processos shadow">
+                        <h6 class="text-center mb-5">RAM</h6>
+                        <div class="filas">
+                            <table class="table-sm m-auto">
+                                <tbody>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+
+
+                    </div>
                 </div>
-            </div>
-            <div class="row mt-2">
-                <div class="col-3 bg-danger">
-                    kkkkkkkk
-                </div>
-                <div class="col-9 bg-info">
-                    klkkkkkkkkkkkkkkk
-                </div>
-            </div>
-            <div class="row mt-2">
-                <div class="col-3 bg-danger">
-                    kkkkkkkk
-                </div>
-                <div class="col-9 bg-info">
-                    klkkkkkkkkkkkkkkk
-                </div>
-            </div>
-            <div class="row mt-2">
-                <div class="col-3 bg-danger">
-                    kkkkkkkk
-                </div>
-                <div class="col-9 bg-info">
-                    klkkkkkkkkkkkkkkk
-                </div>
-            </div>
-            <div class="row mt-2">
-                <div class="col-3 bg-danger">
-                    kkkkkkkk
-                </div>
-                <div class="col-9 bg-info">
-                    klkkkkkkkkkkkkkkk
-                </div>
-            </div>
-            <div class="row mt-2">
-                <div class="col-3 bg-danger">
-                    kkkkkkkk
-                </div>
-                <div class="col-9 bg-info">
-                    klkkkkkkkkkkkkkkk
-                </div>
-            </div>
-            <div class="row mt-2">
-                <div class="col-3 bg-danger">
-                    kkkkkkkk
-                </div>
-                <div class="col-9 bg-info">
-                    klkkkkkkkkkkkkkkk
-                </div>
-            </div>
-            <div class="row mt-2">
-                <div class="col-3 bg-danger">
-                    kkkkkkkk
-                </div>
-                <div class="col-9 bg-info">
-                    klkkkkkkkkkkkkkkk
+
+                <div class="col-4">
+                    <div class="gerenciador-processos shadow">
+                        <h6 class="text-center">Disco</h6>
+
+                        <div class="filas">
+                            <span class="scroll">
+                                <table class="table-sm m-auto" style="border: 1px solid #c0c0c0;">
+                                    <tbody id="disco">
+                                        
+                                        
+                                    </tbody>
+                                </table>
+                            </span>
+                        </div>
+
+                    </div>
                 </div>
             </div>
         </div>
@@ -474,6 +529,8 @@
         function criar_processo() {
            let cor = dar_cor_aleatoria();
             document.getElementById('tabela-processos').innerHTML += '<tr><td style="background-color:' + cor + ';"></td><td>' + PID + '</td><td>' + document.getElementById("tempo-chegada").value + '</td><td>' + document.getElementById("tempo-execucao").value + '</td><td>' + temporestante + '</td><td>' + document.getElementById("deadline").value + '</td><td>' + document.getElementById("prioridade").value + '</td></tr>';
+
+            document.getElementById('disco').innerHTML += '<tr><td style="border: 0px">P' + PID + '</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>';
 
             processos++;
             PID++;
