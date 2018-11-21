@@ -99,3 +99,23 @@ h5 {
   font-family: robotoBold;
 }
 
+.gantt td {
+  max-width: 2.0em;
+  min-width: 2.0em;
+  max-height: 2.0em;
+  min-height: 2.0em;
+  width: 2.0em;
+  height: 2.0em;
+  padding: 0 1em;
+}
+
+.tabela-gantt {
+  width: 70em;
+}
+
+.scroll-gantt {
+  overflow-y: auto;
+  overflow-x: auto;
+  height: 16em;
+}
+
