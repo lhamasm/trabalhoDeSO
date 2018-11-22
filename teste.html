@@ -25,7 +25,7 @@
                 <form class="form-inline">
                     <button class="btn btn-outline-dark control" type="button" onclick="sidebar()"><i class="text-light fas fa-bars"></i></button>
                     <div class="vl"></div>
-                    <button class="btn btn-success ml-4" type="button" onclick="tempo()"><i class="fas fa-play"></i></button>
+                    <button class="btn btn-success ml-4" type="button" onclick="tempo(); run();"><i class="fas fa-play"></i></button>
                     <button class="btn btn-warning text-white" type="button" onclick="pause()"><i class="fas fa-pause"></i></i></button>
                     <button class="btn btn-danger" type="button" onclick="stop()"><i class="fas fa-stop"></i></i></button>
                 </form>
@@ -223,154 +223,8 @@
 
                     </div>
                 </div>
-                <div class="col-8 scroll-gantt">
-                     <div class="row mt-1">
-                        <div class="col-12 gantt">
-                            <table class="tabela-gantt">
-                                <tr class='bg-info'>
-                                    <td></td>
-                                    <td></td>  
-                                    <td></td>
-                                    <td></td>   
-                                    <td></td>
-                                    <td></td>                                  
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
-                    <div class="row mt-1">
-                        <div class="col-12 gantt">
-                            <table>
-                                <tr>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
-                    <div class="row mt-1">
-                       <div class="col-12 gantt">
-                            <table>
-                                <tr>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
-                    <div class="row mt-1">
-                       <div class="col-12 gantt">
-                            <table>
-                                <tr>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
-                    <div class="row mt-1">
-                       <div class="col-12 gantt">
-                            <table>
-                                <tr>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
-                    <div class="row mt-1">
-                       <div class="col-12 gantt">
-                            <table>
-                                <tr>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
-                    <div class="row mt-1">
-                       <div class="col-12 gantt">
-                            <table>
-                                <tr>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
-                    <div class="row mt-1">
-                       <div class="col-12 gantt">
-                            <table>
-                                <tr>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
-
-                    <div class="row mt-1">
-                        <div class="col-12 gantt">
-                            <table>
-                                <tr>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
-
-                    <div class="row mt-1">
-                        <div class="col-12 gantt">
-                            <table>
-                                <tr>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
-
-                    <div class="row mt-1">
-                        <div class="col-12 gantt">
-                            <table>
-                                <tr>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
+                <div id="grafico-gantt" class="col-8 scroll-gantt">
+                   
                 </div>
             </div>
 
@@ -395,7 +249,7 @@
                     <div class="gerenciador-processos shadow">
                         <h6 class="text-center mb-5">RAM</h6>
                         <div class="filas">
-                            <table class="table-sm m-auto">
+                            <table class="table-sm">
                                 <tbody>
                                     <tr>
                                         <td></td>
@@ -474,15 +328,12 @@
                     <div class="gerenciador-processos shadow">
                         <h6 class="text-center">Disco</h6>
 
-                        <div class="filas">
-                            <span class="scroll">
-                                <table class="table-sm m-auto" style="border: 1px solid #c0c0c0;">
-                                    <tbody id="disco">
-                                        
-                                        
-                                    </tbody>
-                                </table>
-                            </span>
+                        <div class="scroll-disco mt-2">
+                            <table class="m-auto" style="border: 1px solid #c0c0c0; width: 50%;">
+                                <tbody id="disco">
+                                    
+                                </tbody>
+                            </table>
                         </div>
 
                     </div>
@@ -492,7 +343,7 @@
     </div> 
 
     <script type="text/javascript">
-        var PID = 1;
+        var PID = 0;
         var temporestante = 0;
         var FIFO = [];
         var RR = [];
@@ -501,6 +352,7 @@
         let seg = 0;
         let start;
         let processos = 0;
+        let executando = false;
 
         let tChegada = parseInt(document.getElementById('tempo-chegada').value);
         let tExecucao = parseInt(document.getElementById('tempo-execucao').value);
@@ -575,7 +427,7 @@
         }
         
         function desabilitar() {
-            if(escalonamento == 'fifo' || escalonamento == 'sjf'){
+            if(document.getElementById('escalonamento').value  == 'fifo' || document.getElementById('escalonamento').value  == 'sjf'){
                 document.getElementById('quantum').readOnly = true;
                 document.getElementById('sobrecarga').readOnly = true;
 
@@ -610,15 +462,26 @@
         }
 
         function criar_processo() {
-           let cor = dar_cor_aleatoria();
+            let quadrados = '';
+            let cor = dar_cor_aleatoria();
+
+            PID++;
+
             document.getElementById('tabela-processos').innerHTML += '<tr><td style="background-color:' + cor + ';"></td><td>' + PID + '</td><td>' + document.getElementById("tempo-chegada").value + '</td><td>' + document.getElementById("tempo-execucao").value + '</td><td>' + temporestante + '</td><td>' + document.getElementById("deadline").value + '</td><td>' + document.getElementById("prioridade").value + '</td></tr>';
 
             document.getElementById('disco').innerHTML += '<tr><td style="border: 0px">P' + PID + '</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>';
 
             processos++;
-            PID++;
 
-            //FIFO.push([cor, PID, tExecucao]);
+            FIFO.push([cor, PID, parseInt(document.getElementById('tempo-chegada').value), parseInt(document.getElementById('tempo-execucao').value)]);
+
+            if(executando){
+                for(j = 0; j < parseInt(document.getElementById("tempo-chegada").value); j++){
+                    quadrados += '<i class="fas fa-square-full text-white"></i>';
+                }
+
+                document.getElementById('grafico-gantt').innerHTML += '<div class="row mt-1" style="font-size: 1.5em;"><span>P' + PID + quadrados + '<i class="fas fa-square-full"></i></span></div>';
+            }
         }
 
         function sidebar() {
@@ -630,11 +493,18 @@
         }
 
         function run() {
-            if(escalonamento == 'fifo') {
+
+            executando = true;
+
+            if(document.getElementById('escalonamento').value == 'fifo') {
                 if(FIFO.length != 0){
-                    //código para exibir os processos na fila de pronto
+                    quadrados = '';
                     for(i=0; i < FIFO.length; i++){
-                        document.getElementById('prontos').innerHTML += '<i class="fas fa-circle"></i><br>';
+                        for(j = 0; j < FIFO[i][2]; j++){
+                            quadrados += '<i class="fas fa-square-full text-white"></i>';
+                        }
+
+                        document.getElementById('grafico-gantt').innerHTML += '<div class="row mt-1" style="font-size: 1.5em;"><span>P' + PID + quadrados + '<i class="fas fa-square-full"></i></span></div>';
                     }
                     setTimeout(fifo, 2000);
                 }

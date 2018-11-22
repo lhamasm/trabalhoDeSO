@@ -114,8 +114,16 @@ h5 {
 }
 
 .scroll-gantt {
+  width: 100%;
+  overflow: auto;
+}
+
+.scroll-gantt i {
+  display: inline;
+}
+
+.scroll-disco {
+  height: 23em;
   overflow-y: auto;
-  overflow-x: auto;
-  height: 16em;
 }
 
