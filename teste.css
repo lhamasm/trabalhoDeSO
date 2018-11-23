@@ -105,6 +105,12 @@ h5 {
   overflow-y: auto;
 }
 
+.ram td {
+  width: 2.5em;
+  height: 2.5em;
+  color: white;
+}
+
 
 .scroll-disco {
   height: 90%;
