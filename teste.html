@@ -25,9 +25,9 @@
                 <form class="form-inline">
                     <button class="btn btn-outline-dark control" type="button" onclick="sidebar()"><i class="text-light fas fa-bars"></i></button>
                     <div class="vl"></div>
-                    <button class="btn btn-success ml-4" type="button" onclick="tempo(); run();"><i class="fas fa-play"></i></button>
-                    <button class="btn btn-warning text-white" type="button" onclick="pause()"><i class="fas fa-pause"></i></i></button>
-                    <button class="btn btn-danger" type="button" onclick="stop()"><i class="fas fa-stop"></i></i></button>
+                    <button id="comecar" class="btn btn-success ml-4" type="button" onclick="tempo(); alocacaoMemoria(); run();"><i class="fas fa-play"></i></button>
+                    <button id="pausar" class="btn btn-warning text-white" type="button" onclick="pause()" disabled><i class="fas fa-pause"></i></i></button>
+                    <button id="parar" class="btn btn-danger" type="button" onclick="stop()" disabled><i class="fas fa-stop"></i></i></button>
                 </form>
                 <ul class="navbar-nav p-1" style="color: #C0C0C0; font-size: 0.85em;">
                     <li id="tempo" class="nav-item ml-5 text-center"><span class="" href="#">TEMPO<br>0</span></li>
@@ -238,73 +238,73 @@
 
                 <div class="col-4">
                     <div class="gerenciador-processos shadow">
-                        <h6 class="text-center mb-5">RAM</h6>
-                        <div class="filas">
-                            <table class="table-sm">
+                        <h6 class="text-center mb-3">RAM</h6>
+                        <div class="filas m-auto">
+                            <table class="table-sm m-auto">
                                 <tbody>
                                     <tr>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
+                                        <td id="1"></td>
+                                        <td id="2"></td>
+                                        <td id="3"></td>
+                                        <td id="4"></td>
+                                        <td id="5"></td>
+                                        <td id="6"></td>
+                                        <td id="7"></td>
+                                        <td id="8"></td>
+                                        <td id="9"></td>
+                                        <td id="10"></td>
                                     </tr>
 
                                     <tr>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
+                                        <td id="11"></td>
+                                        <td id="12"></td>
+                                        <td id="13"></td>
+                                        <td id="14"></td>
+                                        <td id="15"></td>
+                                        <td id="16"></td>
+                                        <td id="17"></td>
+                                        <td id="18"></td>
+                                        <td id="19"></td>
+                                        <td id="20"></td>
                                     </tr>
 
                                     <tr>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
+                                        <td id="21"></td>
+                                        <td id="22"></td>
+                                        <td id="23"></td>
+                                        <td id="24"></td>
+                                        <td id="25"></td>
+                                        <td id="26"></td>
+                                        <td id="27"></td>
+                                        <td id="28"></td>
+                                        <td id="29"></td>
+                                        <td id="30"></td>
                                     </tr>
 
                                     <tr>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
+                                        <td id="31"></td>
+                                        <td id="32"></td>
+                                        <td id="33"></td>
+                                        <td id="34"></td>
+                                        <td id="35"></td>
+                                        <td id="36"></td>
+                                        <td id="37"></td>
+                                        <td id="38"></td>
+                                        <td id="39"></td>
+                                        <td id="40"></td>
                                     </tr>
 
                                     <tr>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
+                                        <td id="41"></td>
+                                        <td id="42"></td>
+                                        <td id="43"></td>
+                                        <td id="44"></td>
+                                        <td id="45"></td>
+                                        <td id="46"></td>
+                                        <td id="47"></td>
+                                        <td id="48"></td>
+                                        <td id="49"></td>
+                                        <td id="50"></td>
                                     </tr>
 
                                 </tbody>
@@ -320,7 +320,7 @@
                         <h6 class="text-center">Disco</h6>
 
                         <div class="scroll-disco mt-2">
-                            <table class="m-auto" style="border: 1px solid #c0c0c0; width: 50%;">
+                            <table class="m-auto" style="border: 1px solid #c0c0c0; width: 80%;">
                                 <tbody id="disco">
                                     
                                 </tbody>
@@ -338,6 +338,7 @@
         var temporestante = 0;
         var FIFO = [];
         var RR = [];
+        var memo = [];
         var tempo;
         let seed = 0.753;
         let seg = 0;
@@ -346,7 +347,11 @@
         let executando = false;
         let contador = 0;
         let espera = [];
-        let curTime = 1;
+        let pararSeTimeout;
+        let pararSeTimeout2;
+        let numeroPaginas = 7;
+        let numeroPaginasTotal = 50;
+        let cont = 1;
 
         let tChegada = parseInt(document.getElementById('tempo-chegada').value);
         let tExecucao = parseInt(document.getElementById('tempo-execucao').value);
@@ -357,22 +362,87 @@
         let paginacao = document.getElementById('paginacao').value;
 
         function tempo() {
-            seg++;
+            while(memo[0][2] == 0){
+                if(numeroPaginasTotal-cont+1 > 0){
+                    for(j = 0; j < numeroPaginas; j++){
+                        if(numeroPaginasTotal-cont+1 > 0){
+                            document.getElementById(String(cont)).style.backgroundColor = memo[0][0];
+                            cont++;
+                        } else {
+                            for(k = 1; k <= numeroPaginas-j; k++){
+                                document.getElementById(String(memo[0][1]) + '-' + String(k)).style.backgroundColor = memo[0][0];
+                            }
+                        }
+                    }
+                    memo.shift();
+                } else {
+                    for(k = 1; k < numeroPaginasTotal; k++){
+                        document.getElementById(String(memo[0][1]) + '-' + String(k)).style.backgroundColor = memo[0][0];
+                    }
+                }
+            }
 
             document.getElementById('tempo').innerHTML = '<span class="" href="#">TEMPO<br>' + seg + '</span>';
-            document.getElementById('processo').innerHTML = '<span class="" href="#">PROCESSOS<br>' + processos + '</span>';
+            document.getElementById('processo').innerHTML = '<span class="" href="#">PROCESSOS<br>' + processos + '</span>';        
+
+            seg++;    
 
             start = setTimeout(tempo, 1000);
         }
 
         function pause() {
             clearTimeout(start);
+
+            document.getElementById('parar').disabled = false; 
+            document.getElementById('comecar').disabled = false; 
+            document.getElementById('pausar').disabled = true; 
         }
 
         function stop() {
             clearTimeout(start);
+            clearTimeout(pararSeTimeout);
+            clearTimeout(pararSeTimeout2);
             seg = 0;
+            processos = 0;
             document.getElementById('tempo').innerHTML = '<span class="" href="#">TEMPO<br>' + seg + '</span>';
+            document.getElementById('grafico-gantt').innerHTML = '';
+            document.getElementById('circulo').style.display = 'none';
+            document.getElementById('fila-prontos').innerHTML = '';
+            document.getElementById('processo').innerHTML = '<span class="" href="#">PROCESSOS<br>' + processos + '</span>';
+
+            document.getElementById('parar').disabled = true; 
+            document.getElementById('comecar').disabled = false; 
+            document.getElementById('pausar').disabled = true; 
+
+        }
+
+        function alocacaoMemoria(){
+            for(i = 0; i < memo.length; i++){
+                if(seg == memo[i][2]+1){
+                    if(numeroPaginasTotal-cont+1 > 0){
+                        for(j = 0; j < numeroPaginas; j++){
+                            if(numeroPaginasTotal-cont+1 > 0){
+                                document.getElementById(String(cont)).style.backgroundColor = memo[i][0];
+                                cont++;
+                            } else {
+                                for(k = 1; k <= numeroPaginas-j; k++){
+                                    alert(memo[i][0]);
+                                    document.getElementById(String(memo[i][1]) + '-' + String(k)).style.backgroundColor = memo[i][0];
+                                }
+                                break;
+                            }
+                        }
+                    } else {
+                        for(k = 1; k <= numeroPaginas; k++){
+                            document.getElementById(String(memo[i][1]) + '-' + String(k)).style.backgroundColor = memo[i][0];
+                        }
+                    }
+                }
+            }
+
+            if(memo.length > 0){
+                setTimeout(alocacaoMemoria, 1000);
+            } 
         }
 
         function sleep(miliseconds) {
@@ -381,6 +451,8 @@
            while (currentTime + miliseconds >= new Date().getTime()) {}
         }
 
+
+        
         function fifo() {
             document.getElementById(FIFO[0][1]).style.display = 'none';
             document.getElementById('circulo').style.display = 'block';
@@ -389,11 +461,11 @@
             if(contador <= FIFO[0][3]){
                 document.getElementById(FIFO[0][0]).innerHTML += '<i class="fas fa-square-full text-success"></i>';
                 for(i = 1; i < FIFO.length; i++){
-                    if(seg >= FIFO[i][2]){
+                    if(seg > FIFO[i][2]){
                         document.getElementById(FIFO[i][0]).innerHTML += '<i class="fas fa-square-full text-warning"></i>';
                     }
                 }
-                setTimeout(fifo, 1000);
+                pararSeTimeout = setTimeout(fifo, 1000);
             } else {
                 FIFO.shift();
                 processos--;
@@ -429,7 +501,7 @@
                             document.getElementById(RR[i][0]).innerHTML += '<i class="fas fa-square-full text-warning"></i>';
                         }
                     }
-                    setTimeout(rr, 1000);
+                    pararSeTimeout = setTimeout(rr, 1000);
                 } else {
                     let p = RR.shift();
                     remove('fila-prontos', p[1]);
@@ -446,7 +518,7 @@
                         contador = 0;
                         if(terminou){
                             terminou = false;
-                            setTimeout(rr, (RR[0][2]-seg)*1000);
+                            pararSeTimeout = setTimeout(rr, (RR[0][2]-seg)*1000);
                         } else {
                             document.getElementById(p[0]).innerHTML += '<i class="fas fa-square-full text-danger"></i>';
                             for(j = 0; j < RR.length-1; j++){
@@ -454,7 +526,7 @@
                             }
 
                             for(i = 0; i < parseInt(document.getElementById('sobrecarga').value)-1; i++){
-                                setTimeout(function() {
+                                pararSeTimeout = setTimeout(function() {
                                     document.getElementById(p[0]).innerHTML += '<i class="fas fa-square-full text-danger"></i>';
                                     for(j = 0; j < RR.length-1; j++){
                                         document.getElementById(RR[j][0]).innerHTML += '<i class="fas fa-square-full text-warning"></i>';
@@ -521,12 +593,14 @@
 
             document.getElementById('tabela-processos').innerHTML += '<tr><td style="background-color:' + cor + ';"></td><td>' + PID + '</td><td>' + document.getElementById("tempo-chegada").value + '</td><td>' + document.getElementById("tempo-execucao").value + '</td><td>' + temporestante + '</td><td>' + document.getElementById("deadline").value + '</td><td>' + document.getElementById("prioridade").value + '</td></tr>';
 
-            document.getElementById('disco').innerHTML += '<tr><td style="border: 0px">P' + PID + '</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>';
+            document.getElementById('disco').innerHTML += '<tr><td width="10%" style="border: 0px">P' + PID + '</td><td id="' + PID + '-1"></td><td id="' + PID + '-2"></td><td id="' + PID + '-3"></td><td id="' + PID + '-4"></td><td id="' + PID + '-5"></td><td id="' + PID + '-6"></td><td id="' + PID + '-7"></td></tr>';
 
             processos++;
 
             FIFO.push([cor, PID, parseInt(document.getElementById('tempo-chegada').value), parseInt(document.getElementById('tempo-execucao').value)]);
             RR.push([cor, PID, parseInt(document.getElementById('tempo-chegada').value), parseInt(document.getElementById('tempo-execucao').value)]);
+
+            memo.push([cor, PID, parseInt(document.getElementById('tempo-chegada').value), parseInt(document.getElementById('tempo-execucao').value)]);
 
             FIFO.sort(function(a, b) {
                 return a[2]-b[2];
@@ -536,14 +610,16 @@
                 return a[2]-b[2];
             });
 
-            espera.push(0);
+            memo.sort(function(a, b) {
+                return a[2]-b[2];
+            });
 
             if(executando){
                 for(j = 0; j < parseInt(document.getElementById("tempo-chegada").value); j++){
                     quadrados += '<i class="fas fa-square-full text-white"></i>';
                 }
 
-                document.getElementById('grafico-gantt').innerHTML += '<div class="row mt-1" style="font-size: 1.5em;"><span>P' + PID + quadrados + '<i class="fas fa-square-full"></i></span></div>';
+                document.getElementById('grafico-gantt').innerHTML += '<div class="row mt-1" style="font-size: 1.5em;"><span>P' + PID + quadrados + '</span></div>';
             }
         }
 
@@ -559,13 +635,16 @@
 
             executando = true;
             contador = 0;
-            curTime = 1;
+
+            document.getElementById('parar').disabled = false; 
+            document.getElementById('comecar').disabled = true; 
+            document.getElementById('pausar').disabled = false; 
 
             if(document.getElementById('escalonamento').value == 'fifo') {
                 if(FIFO.length != 0){
                     for(i=0; i < FIFO.length; i++){
                         quadrados = '';
-                        for(j = 0; j <= FIFO[i][2]; j++){
+                        for(j = 0; j < FIFO[i][2]; j++){
                             quadrados += '<i class="fas fa-square-full text-white"></i>';
                         }
 
@@ -573,13 +652,13 @@
 
                         document.getElementById('fila-prontos').innerHTML += '<td id="' + FIFO[i][1]+ '" width="10%" style="background-color:' + FIFO[i][0] + ';"></td>';
                     }
-                    fifo();
+                    pararSeTimeout2 = setTimeout(fifo, FIFO[0][2] * 1000);
                 }
             } else if(document.getElementById('escalonamento').value == 'rr') {
                 if(RR.length != 0){
                     for(i=0; i < RR.length; i++){
                         quadrados = '';
-                        for(j = 0; j <= RR[i][2]; j++){
+                        for(j = 0; j < RR[i][2]; j++){
                             quadrados += '<i class="fas fa-square-full text-white"></i>';
                         }
 

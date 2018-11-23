@@ -98,33 +98,16 @@ h5 {
   font-family: robotoBold;
 }
 
-.gantt td {
-  max-width: 2.0em;
-  min-width: 2.0em;
-  max-height: 2.0em;
-  min-height: 2.0em;
-  width: 2.0em;
-  height: 2.0em;
-  padding: 0 1em;
-}
-
-.tabela-gantt {
-  width: 70em;
-}
-
 .scroll-gantt {
-  width: 100%;
+  width: 30em;
   height: 16.5em;
   overflow-x: auto;
   overflow-y: auto;
 }
 
-.scroll-gantt i {
-  display: inline;
-}
 
 .scroll-disco {
-  height: 23em;
+  height: 90%;
   overflow-y: auto;
 }
 
