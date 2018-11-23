@@ -172,7 +172,7 @@
                         <p class="text-center">CPU</p>
                         <div class="row mb-2">
                             <div class="offset-5 col-2 d-flex justify-content-center" style="height: 3em; border: 2px solid black;" >
-                                <i class="fas fa-circle mt-2" style="font-size: 1.5em; display: none;"></i>
+                                <i id="circulo" class="fas fa-circle mt-2" style="font-size: 1.5em; display: none;"></i>
                             </div>
                         </div>
 
@@ -181,17 +181,8 @@
                             <div class="filas ml-3">
                                 <table>
                                     <tbody>
-                                        <tr>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
+                                        <tr id="fila-prontos">
+                                            
                                         </tr>
                                     </tbody>
                                 </table>
@@ -353,6 +344,7 @@
         let start;
         let processos = 0;
         let executando = false;
+        let contador = 0;
 
         let tChegada = parseInt(document.getElementById('tempo-chegada').value);
         let tExecucao = parseInt(document.getElementById('tempo-execucao').value);
@@ -368,7 +360,7 @@
             document.getElementById('tempo').innerHTML = '<span class="" href="#">TEMPO<br>' + seg + '</span>';
             document.getElementById('processo').innerHTML = '<span class="" href="#">PROCESSOS<br>' + processos + '</span>';
 
-            start = setTimeout(tempo, 700);
+            start = setTimeout(tempo, 1000);
         }
 
         function pause() {
@@ -388,41 +380,73 @@
         }
 
         function fifo() {
-            while(FIFO.length > 0){
-                tempo = FIFO[0][2];
-                while(tempo > 0){
-                    //código para exibir o processo executando na CPU
-                    document.getElementById('cpu').innerHTML = '<i class="fas fa-circle"></i>';
-                    sleep(700);
-                    tempo--;
-                }
+            document.getElementById(FIFO[0][1]).style.display = 'none';
+            document.getElementById('circulo').style.display = 'block';
+            document.getElementById('circulo').style.color = FIFO[0][0];  
+            contador++;
+            if(contador <= FIFO[0][3]){
+                setTimeout(fifo, 1000);
+            } else {
                 FIFO.shift();
-                document.getElementById('cpu').innerHTML = '';
-                document.getElementById('prontos').innerHTML = '';
-                if(FIFO.length != 0) {
-                    for(i=0; i<FIFO.length; i++){
-                        document.getElementById('prontos').innerHTML += '<i class="fas fa-circle"></i>';
-                    }
-                } 
+                processos--;
+                document.getElementById('processo').innerHTML = '<span class="" href="#">PROCESSOS<br>' + processos + '</span>';
+                if(FIFO.length > 0){
+                    contador = 0;
+                    fifo();
+                } else {
+                    document.getElementById('circulo').style.display = 'none';
+                }
+
             }
-            alert("Todos os processos foram executados");
         }
 
-        function RR(quantum, sobrecarga){
-            while(RR.length > 0){
-                tempo = RR[0][2];
-                while(tempo < quantum){
-                    //código para exibir o processo executando na CPU
-                    setTimeout(function() {
-                        tempo--;
-                    }, 1000);
+        function remove(parent,child){
+            let p = document.getElementById(parent);
+            let c = document.getElementById(child);
+            p.removeChild(c);
+        }
+
+        function rr(){
+            let terminou = false;
+
+            document.getElementById(RR[0][1]).style.display = 'none';
+            document.getElementById('circulo').style.display = 'block';
+            document.getElementById('circulo').style.color = RR[0][0];  
+            contador++;
+            if(RR[0][3] != 0 ){
+                if(contador <= parseInt(document.getElementById('quantum').value)){
+                    setTimeout(rr, 1000);
+                } else {
+                    let p = RR.shift();
+                    remove('fila-prontos', p[1]);
+                    p[3] -= parseInt(document.getElementById('quantum').value);
+                    if(p[3] > 0){
+                        RR.push(p);
+                        document.getElementById('fila-prontos').innerHTML += '<td id="' + RR[0][1]+ '" width="10%" style="background-color:' + RR[0][0] + ';"></td>';
+                        document.getElementById('circulo').style.display = 'none';
+                    } else {
+                        terminou = true;
+                    }
+                    
+                    if(RR.length > 0){
+                        contador = 0;
+                        if(terminou){
+                            terminou = false;
+                            rr()
+                        } else {
+                            setTimeout(rr, parseInt(document.getElementById('sobrecarga').value) * 1000);
+                        }
+                    } else {
+                        document.getElementById('circulo').style.display = 'none';
+                        processos--;
+                        document.getElementById('processo').innerHTML = '<span class="" href="#">PROCESSOS<br>' + processos + '</span>';
+                    }
                 }
-                processo = RR.shift();
-                if(tempo > 0){
-                    processo[2] = tempo;
-                }
-                RR.push(processo);
-                setTimeout(RR, sobrecarga*1000);
+
+            } else {
+                document.getElementById('circulo').style.display = 'none';
+                processos--;
+                document.getElementById('processo').innerHTML = '<span class="" href="#">PROCESSOS<br>' + processos + '</span>';
             }
         }
         
@@ -474,6 +498,7 @@
             processos++;
 
             FIFO.push([cor, PID, parseInt(document.getElementById('tempo-chegada').value), parseInt(document.getElementById('tempo-execucao').value)]);
+            RR.push([cor, PID, parseInt(document.getElementById('tempo-chegada').value), parseInt(document.getElementById('tempo-execucao').value)]);
 
             if(executando){
                 for(j = 0; j < parseInt(document.getElementById("tempo-chegada").value); j++){
@@ -495,18 +520,35 @@
         function run() {
 
             executando = true;
+            contador = 0;
 
             if(document.getElementById('escalonamento').value == 'fifo') {
                 if(FIFO.length != 0){
-                    quadrados = '';
                     for(i=0; i < FIFO.length; i++){
+                        quadrados = '';
                         for(j = 0; j < FIFO[i][2]; j++){
                             quadrados += '<i class="fas fa-square-full text-white"></i>';
                         }
 
-                        document.getElementById('grafico-gantt').innerHTML += '<div class="row mt-1" style="font-size: 1.5em;"><span>P' + PID + quadrados + '<i class="fas fa-square-full"></i></span></div>';
+                        document.getElementById('grafico-gantt').innerHTML += '<div class="row mt-1" style="font-size: 1.5em;"><span>P' + FIFO[i][1] + quadrados + '<i class="fas fa-square-full"></i></span></div>';
+
+                        document.getElementById('fila-prontos').innerHTML += '<td id="' + FIFO[i][1]+ '" width="10%" style="background-color:' + FIFO[i][0] + ';"></td>';
                     }
-                    setTimeout(fifo, 2000);
+                    fifo();
+                }
+            } else if(document.getElementById('escalonamento').value == 'rr') {
+                if(RR.length != 0){
+                    for(i=0; i < RR.length; i++){
+                        quadrados = '';
+                        for(j = 0; j < RR[i][2]; j++){
+                            quadrados += '<i class="fas fa-square-full text-white"></i>';
+                        }
+
+                        document.getElementById('grafico-gantt').innerHTML += '<div class="row mt-1" style="font-size: 1.5em;"><span>P' + RR[i][1] + quadrados + '<i class="fas fa-square-full"></i></span></div>';
+
+                        document.getElementById('fila-prontos').innerHTML += '<td id="' + RR[i][1]+ '" width="10%" style="background-color:' + RR[i][0] + ';"></td>';
+                    }
+                    rr();
                 }
             }
         }

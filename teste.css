@@ -83,7 +83,6 @@ table, th, td {
   font-size: 0.83em;
   text-align: center;
   border: 1.5px solid #696969;
-  width: 14em;
 }
 
 .btn-midnight {
@@ -115,7 +114,9 @@ h5 {
 
 .scroll-gantt {
   width: 100%;
-  overflow: auto;
+  height: 16.5em;
+  overflow-x: auto;
+  overflow-y: auto;
 }
 
 .scroll-gantt i {
