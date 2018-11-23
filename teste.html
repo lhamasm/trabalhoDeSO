@@ -345,6 +345,7 @@
         let processos = 0;
         let executando = false;
         let contador = 0;
+        let espera = [];
 
         let tChegada = parseInt(document.getElementById('tempo-chegada').value);
         let tExecucao = parseInt(document.getElementById('tempo-execucao').value);
@@ -385,9 +386,17 @@
             document.getElementById('circulo').style.color = FIFO[0][0];  
             contador++;
             if(contador <= FIFO[0][3]){
+                document.getElementById(FIFO[0][0]).innerHTML += '<i class="fas fa-square-full text-success"></i>';
+                for(i = 1; i < FIFO.length; i++){
+                    if(espera[i] <= Math.abs(FIFO[0][3]-FIFO[i][2])){
+                        document.getElementById(FIFO[i][0]).innerHTML += '<i class="fas fa-square-full text-warning"></i>';
+                        espera[i]++;
+                    }
+                }
                 setTimeout(fifo, 1000);
             } else {
                 FIFO.shift();
+                espera.shift();
                 processos--;
                 document.getElementById('processo').innerHTML = '<span class="" href="#">PROCESSOS<br>' + processos + '</span>';
                 if(FIFO.length > 0){
@@ -415,6 +424,10 @@
             contador++;
             if(RR[0][3] != 0 ){
                 if(contador <= parseInt(document.getElementById('quantum').value)){
+                    document.getElementById(RR[0][0]).innerHTML += '<i class="fas fa-square-full text-success"></i>';
+                    for(i = 1; i < RR.length; i++){
+                        document.getElementById(RR[i][0]).innerHTML += '<i class="fas fa-square-full text-warning"></i>';
+                    }
                     setTimeout(rr, 1000);
                 } else {
                     let p = RR.shift();
@@ -434,6 +447,10 @@
                             terminou = false;
                             rr()
                         } else {
+                            document.getElementById(p[0]).innerHTML += '<i class="fas fa-square-full text-danger"></i>';
+                            for(i = 0; i < RR.length-1; i++){
+                                document.getElementById(RR[i][0]).innerHTML += '<i class="fas fa-square-full text-warning"></i>';
+                            }
                             setTimeout(rr, parseInt(document.getElementById('sobrecarga').value) * 1000);
                         }
                     } else {
@@ -500,6 +517,16 @@
             FIFO.push([cor, PID, parseInt(document.getElementById('tempo-chegada').value), parseInt(document.getElementById('tempo-execucao').value)]);
             RR.push([cor, PID, parseInt(document.getElementById('tempo-chegada').value), parseInt(document.getElementById('tempo-execucao').value)]);
 
+            FIFO.sort(function(a, b) {
+                return a[2] > b[2];
+            });
+
+            RR.sort(function(a, b) {
+                return a[2] > b[2];
+            });
+
+            espera.push(0);
+
             if(executando){
                 for(j = 0; j < parseInt(document.getElementById("tempo-chegada").value); j++){
                     quadrados += '<i class="fas fa-square-full text-white"></i>';
@@ -526,11 +553,11 @@
                 if(FIFO.length != 0){
                     for(i=0; i < FIFO.length; i++){
                         quadrados = '';
-                        for(j = 0; j < FIFO[i][2]; j++){
+                        for(j = 0; j <= FIFO[i][2]; j++){
                             quadrados += '<i class="fas fa-square-full text-white"></i>';
                         }
 
-                        document.getElementById('grafico-gantt').innerHTML += '<div class="row mt-1" style="font-size: 1.5em;"><span>P' + FIFO[i][1] + quadrados + '<i class="fas fa-square-full"></i></span></div>';
+                        document.getElementById('grafico-gantt').innerHTML += '<div id="'+ FIFO[i][0] + '" class="row mt-1" style="font-size: 1.5em;"><span id="grafico">P' + FIFO[i][1] + quadrados + '</span></div>';
 
                         document.getElementById('fila-prontos').innerHTML += '<td id="' + FIFO[i][1]+ '" width="10%" style="background-color:' + FIFO[i][0] + ';"></td>';
                     }
@@ -540,11 +567,11 @@
                 if(RR.length != 0){
                     for(i=0; i < RR.length; i++){
                         quadrados = '';
-                        for(j = 0; j < RR[i][2]; j++){
+                        for(j = 0; j <= RR[i][2]; j++){
                             quadrados += '<i class="fas fa-square-full text-white"></i>';
                         }
 
-                        document.getElementById('grafico-gantt').innerHTML += '<div class="row mt-1" style="font-size: 1.5em;"><span>P' + RR[i][1] + quadrados + '<i class="fas fa-square-full"></i></span></div>';
+                        document.getElementById('grafico-gantt').innerHTML += '<div id="'+ RR[i][0] + '" class="row mt-1" style="font-size: 1.5em;"><span id="grafico">P' + RR[i][1] + quadrados + '</span></div>';
 
                         document.getElementById('fila-prontos').innerHTML += '<td id="' + RR[i][1]+ '" width="10%" style="background-color:' + RR[i][0] + ';"></td>';
                     }
