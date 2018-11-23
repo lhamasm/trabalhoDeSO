@@ -422,7 +422,7 @@
                     p[3] -= parseInt(document.getElementById('quantum').value);
                     if(p[3] > 0){
                         RR.push(p);
-                        document.getElementById('fila-prontos').innerHTML += '<td id="' + RR[0][1]+ '" width="10%" style="background-color:' + RR[0][0] + ';"></td>';
+                        document.getElementById('fila-prontos').innerHTML += '<td id="' + p[1]+ '" width="10%" style="background-color:' + p[0] + ';"></td>';
                         document.getElementById('circulo').style.display = 'none';
                     } else {
                         terminou = true;
