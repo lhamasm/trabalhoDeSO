@@ -346,6 +346,7 @@
         let executando = false;
         let contador = 0;
         let espera = [];
+        let curTime = 0;
 
         let tChegada = parseInt(document.getElementById('tempo-chegada').value);
         let tExecucao = parseInt(document.getElementById('tempo-execucao').value);
@@ -381,14 +382,17 @@
         }
 
         function fifo() {
+            curTime = 0;
+
             document.getElementById(FIFO[0][1]).style.display = 'none';
             document.getElementById('circulo').style.display = 'block';
             document.getElementById('circulo').style.color = FIFO[0][0];  
             contador++;
             if(contador <= FIFO[0][3]){
                 document.getElementById(FIFO[0][0]).innerHTML += '<i class="fas fa-square-full text-success"></i>';
+                curTime++;
                 for(i = 1; i < FIFO.length; i++){
-                    if(espera[i] <= Math.abs(FIFO[0][3]-FIFO[i][2])){
+                    if(espera[i] <= curTime - FIFO[i][2]){
                         document.getElementById(FIFO[i][0]).innerHTML += '<i class="fas fa-square-full text-warning"></i>';
                         espera[i]++;
                     }
@@ -401,6 +405,9 @@
                 document.getElementById('processo').innerHTML = '<span class="" href="#">PROCESSOS<br>' + processos + '</span>';
                 if(FIFO.length > 0){
                     contador = 0;
+                    for(i=0; i<espera.length; i++){
+                        espera[i] = 0;
+                    }
                     fifo();
                 } else {
                     document.getElementById('circulo').style.display = 'none';
@@ -426,15 +433,21 @@
                 if(contador <= parseInt(document.getElementById('quantum').value)){
                     document.getElementById(RR[0][0]).innerHTML += '<i class="fas fa-square-full text-success"></i>';
                     for(i = 1; i < RR.length; i++){
-                        document.getElementById(RR[i][0]).innerHTML += '<i class="fas fa-square-full text-warning"></i>';
+                        if(espera[i] <= (curTime - RR[i][2])+1){
+                            document.getElementById(RR[i][0]).innerHTML += '<i class="fas fa-square-full text-warning"></i>';
+                            espera[i]++;
+                        }
                     }
+                    curTime++;
                     setTimeout(rr, 1000);
                 } else {
                     let p = RR.shift();
+                    espera.shift();
                     remove('fila-prontos', p[1]);
                     p[3] -= parseInt(document.getElementById('quantum').value);
                     if(p[3] > 0){
                         RR.push(p);
+                        espera.push(0);
                         document.getElementById('fila-prontos').innerHTML += '<td id="' + p[1]+ '" width="10%" style="background-color:' + p[0] + ';"></td>';
                         document.getElementById('circulo').style.display = 'none';
                     } else {
@@ -518,11 +531,11 @@
             RR.push([cor, PID, parseInt(document.getElementById('tempo-chegada').value), parseInt(document.getElementById('tempo-execucao').value)]);
 
             FIFO.sort(function(a, b) {
-                return a[2] > b[2];
+                return a[2]-b[2];
             });
 
             RR.sort(function(a, b) {
-                return a[2] > b[2];
+                return a[2]-b[2];
             });
 
             espera.push(0);
@@ -548,6 +561,7 @@
 
             executando = true;
             contador = 0;
+            curTime = 0;
 
             if(document.getElementById('escalonamento').value == 'fifo') {
                 if(FIFO.length != 0){
