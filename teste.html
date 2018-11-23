@@ -346,7 +346,7 @@
         let executando = false;
         let contador = 0;
         let espera = [];
-        let curTime = 0;
+        let curTime = 1;
 
         let tChegada = parseInt(document.getElementById('tempo-chegada').value);
         let tExecucao = parseInt(document.getElementById('tempo-execucao').value);
@@ -382,33 +382,25 @@
         }
 
         function fifo() {
-            curTime = 0;
-
             document.getElementById(FIFO[0][1]).style.display = 'none';
             document.getElementById('circulo').style.display = 'block';
             document.getElementById('circulo').style.color = FIFO[0][0];  
             contador++;
             if(contador <= FIFO[0][3]){
                 document.getElementById(FIFO[0][0]).innerHTML += '<i class="fas fa-square-full text-success"></i>';
-                curTime++;
                 for(i = 1; i < FIFO.length; i++){
-                    if(espera[i] <= curTime - FIFO[i][2]){
+                    if(seg >= FIFO[i][2]){
                         document.getElementById(FIFO[i][0]).innerHTML += '<i class="fas fa-square-full text-warning"></i>';
-                        espera[i]++;
                     }
                 }
                 setTimeout(fifo, 1000);
             } else {
                 FIFO.shift();
-                espera.shift();
                 processos--;
                 document.getElementById('processo').innerHTML = '<span class="" href="#">PROCESSOS<br>' + processos + '</span>';
                 if(FIFO.length > 0){
                     contador = 0;
-                    for(i=0; i<espera.length; i++){
-                        espera[i] = 0;
-                    }
-                    fifo();
+                    setTimeout(fifo, (FIFO[0][2]-seg)*1000);
                 } else {
                     document.getElementById('circulo').style.display = 'none';
                 }
@@ -433,21 +425,17 @@
                 if(contador <= parseInt(document.getElementById('quantum').value)){
                     document.getElementById(RR[0][0]).innerHTML += '<i class="fas fa-square-full text-success"></i>';
                     for(i = 1; i < RR.length; i++){
-                        if(espera[i] <= (curTime - RR[i][2])+1){
+                        if(seg >= RR[i][2]){
                             document.getElementById(RR[i][0]).innerHTML += '<i class="fas fa-square-full text-warning"></i>';
-                            espera[i]++;
                         }
                     }
-                    curTime++;
                     setTimeout(rr, 1000);
                 } else {
                     let p = RR.shift();
-                    espera.shift();
                     remove('fila-prontos', p[1]);
                     p[3] -= parseInt(document.getElementById('quantum').value);
                     if(p[3] > 0){
                         RR.push(p);
-                        espera.push(0);
                         document.getElementById('fila-prontos').innerHTML += '<td id="' + p[1]+ '" width="10%" style="background-color:' + p[0] + ';"></td>';
                         document.getElementById('circulo').style.display = 'none';
                     } else {
@@ -458,12 +446,22 @@
                         contador = 0;
                         if(terminou){
                             terminou = false;
-                            rr()
+                            setTimeout(rr, (RR[0][2]-seg)*1000);
                         } else {
                             document.getElementById(p[0]).innerHTML += '<i class="fas fa-square-full text-danger"></i>';
-                            for(i = 0; i < RR.length-1; i++){
-                                document.getElementById(RR[i][0]).innerHTML += '<i class="fas fa-square-full text-warning"></i>';
+                            for(j = 0; j < RR.length-1; j++){
+                                document.getElementById(RR[j][0]).innerHTML += '<i class="fas fa-square-full text-warning"></i>';
                             }
+
+                            for(i = 0; i < parseInt(document.getElementById('sobrecarga').value)-1; i++){
+                                setTimeout(function() {
+                                    document.getElementById(p[0]).innerHTML += '<i class="fas fa-square-full text-danger"></i>';
+                                    for(j = 0; j < RR.length-1; j++){
+                                        document.getElementById(RR[j][0]).innerHTML += '<i class="fas fa-square-full text-warning"></i>';
+                                    }
+                                }, 1000 + 1000*i);
+                            }
+                            
                             setTimeout(rr, parseInt(document.getElementById('sobrecarga').value) * 1000);
                         }
                     } else {
@@ -561,7 +559,7 @@
 
             executando = true;
             contador = 0;
-            curTime = 0;
+            curTime = 1;
 
             if(document.getElementById('escalonamento').value == 'fifo') {
                 if(FIFO.length != 0){
