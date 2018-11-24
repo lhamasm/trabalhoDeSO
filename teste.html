@@ -48,7 +48,6 @@
                         <div class="col-6">             
                             <label for="escalonamento">Escalonamento</label>
                             <select class="form-control custom-select" id="escalonamento" onchange="desabilitar()" style="font-size:0.9em;">
-                                <option value="none">[Selecione]</option>
                                 <option value="fifo">FIFO</option>
                                 <option value="rr">Round Robin</option>
                                 <option value="edf">EDF</option>
@@ -131,22 +130,22 @@
                                 <div class="row">
                                     <div class="col-6">
                                         <label for="tempo-chegada">Tempo de Chegada</label>
-                                        <input type="number" class="form-control" id="tempo-chegada" min="0" required> 
+                                        <input type="number" class="form-control" id="tempo-chegada" min="1" required> 
                                     </div>
                                     <div class="col-6">
                                         <label for="prioridade">Prioridade</label>
-                                        <input type="number" class="form-control" id="prioridade" min="0" required> 
+                                        <input type="number" class="form-control" id="prioridade" min="1" required> 
                                     </div>
                                 </div>
 
                                 <div class="row">
                                     <div class="col-6">
                                         <label for="tempo-execucao">Tempo de Execução</label>
-                                        <input type="number" class="form-control" id="tempo-execucao" min="0" required> 
+                                        <input type="number" class="form-control" id="tempo-execucao" min="1" required> 
                                     </div>
                                     <div class="col-6">
                                         <label for="deadline">Deadline</label>
-                                        <input type="number" class="form-control" id="deadline" min="0" required> 
+                                        <input type="number" class="form-control" id="deadline" min="1" required> 
                                     </div>
                                 </div>
                             </div>
@@ -362,33 +361,14 @@
         let paginacao = document.getElementById('paginacao').value;
 
         function tempo() {
-            while(memo.length > 0 && memo[0][2] == 0){
-                if(numeroPaginasTotal-cont+1 > 0){
-                    for(j = 0; j < numeroPaginas; j++){
-                        if(numeroPaginasTotal-cont+1 > 0){
-                            document.getElementById(String(cont)).style.backgroundColor = memo[0][0];
-                            cont++;
-                        } else {
-                            for(k = 1; k <= numeroPaginas-j; k++){
-                                document.getElementById(String(memo[0][1]) + '-' + String(k)).style.backgroundColor = memo[0][0];
-                            }
-                        }
-                    }
-                    memo.shift();
-                } else {
-                    for(k = 1; k < numeroPaginasTotal; k++){
-                        document.getElementById(String(memo[0][1]) + '-' + String(k)).style.backgroundColor = memo[0][0];
-                    }
-                }
-            }
+
+            seg++; 
 
             let memoLivre = ((50-(cont-1))/numeroPaginasTotal)*100;
 
             document.getElementById('tempo').innerHTML = '<span class="" href="#">TEMPO<br>' + seg + '</span>';
             document.getElementById('processo').innerHTML = '<span class="" href="#">PROCESSOS<br>' + processos + '</span>';    
-            document.getElementById('memolivre').innerHTML = '<span class="" href="#">MEMÓRIA LIVRE<br>' + memoLivre + '%</span>';       
-
-            seg++;    
+            document.getElementById('memolivre').innerHTML = '<span class="" href="#">MEMÓRIA LIVRE<br>' + memoLivre + '%</span>';          
 
             start = setTimeout(tempo, 1000);
         }
@@ -421,7 +401,7 @@
 
         function alocacaoMemoria(){
             for(i = 0; i < memo.length; i++){
-                if(seg == memo[i][2]+1){
+                if(seg == memo[i][2]){
                     if(numeroPaginasTotal-cont+1 > 0){
                         for(j = 0; j < numeroPaginas; j++){
                             if(numeroPaginasTotal-cont+1 > 0){
@@ -463,7 +443,7 @@
             if(contador <= FIFO[0][3]){
                 document.getElementById(FIFO[0][0]).innerHTML += '<i class="fas fa-square-full text-success"></i>';
                 for(i = 1; i < FIFO.length; i++){
-                    if(seg > FIFO[i][2]){
+                    if(seg >= FIFO[i][2]){
                         document.getElementById(FIFO[i][0]).innerHTML += '<i class="fas fa-square-full text-warning"></i>';
                     }
                 }
@@ -496,7 +476,7 @@
             document.getElementById('circulo').style.color = RR[0][0];  
             contador++;
             if(RR[0][3] != 0 ){
-                if(contador <= parseInt(document.getElementById('quantum').value)){
+                if(contador <= RR[0][3] && contador <= parseInt(document.getElementById('quantum').value)){
                     document.getElementById(RR[0][0]).innerHTML += '<i class="fas fa-square-full text-success"></i>';
                     for(i = 1; i < RR.length; i++){
                         if(seg >= RR[i][2]){
@@ -509,7 +489,11 @@
                     remove('fila-prontos', p[1]);
                     p[3] -= parseInt(document.getElementById('quantum').value);
                     if(p[3] > 0){
+                        p[2] = seg;
                         RR.push(p);
+                        RR.sort(function(a, b) {
+                            return a[2]-b[2];
+                        });
                         document.getElementById('fila-prontos').innerHTML += '<td id="' + p[1]+ '" width="10%" style="background-color:' + p[0] + ';"></td>';
                         document.getElementById('circulo').style.display = 'none';
                     } else {
@@ -523,16 +507,23 @@
                             pararSeTimeout = setTimeout(rr, (RR[0][2]-seg)*1000);
                         } else {
                             document.getElementById(p[0]).innerHTML += '<i class="fas fa-square-full text-danger"></i>';
-                            for(j = 0; j < RR.length-1; j++){
-                                document.getElementById(RR[j][0]).innerHTML += '<i class="fas fa-square-full text-warning"></i>';
-                            }
+
+                            for(i = 0; i < RR.length; i++){
+                                if(RR[i][1] != p[1] && seg >= RR[i][2]){
+                                    document.getElementById(RR[i][0]).innerHTML += '<i class="fas fa-square-full text-warning"></i>';
+                                }
+                            }                            
 
                             for(i = 0; i < parseInt(document.getElementById('sobrecarga').value)-1; i++){
                                 pararSeTimeout = setTimeout(function() {
                                     document.getElementById(p[0]).innerHTML += '<i class="fas fa-square-full text-danger"></i>';
-                                    for(j = 0; j < RR.length-1; j++){
-                                        document.getElementById(RR[j][0]).innerHTML += '<i class="fas fa-square-full text-warning"></i>';
+
+                                    for(j = 0; j < RR.length; j++){
+                                        if(RR[i][1] != p[1] && seg >= RR[j][2]){
+                                            document.getElementById(RR[j][0]).innerHTML += '<i class="fas fa-square-full text-warning"></i>';
+                                        }
                                     }
+                                    
                                 }, 1000 + 1000*i);
                             }
                             
@@ -651,7 +642,7 @@
                             quadrados += '<i class="fas fa-square-full text-white"></i>';
                         }
 
-                        document.getElementById('grafico-gantt').innerHTML += '<div id="'+ FIFO[i][0] + '" class="row mt-1" style="font-size: 1.5em;"><span id="grafico">P' + FIFO[i][1] + quadrados + '</span></div>';
+                        document.getElementById('grafico-gantt').innerHTML += '<div id="'+ FIFO[i][0] + '" class="row mt-1" style="font-size: 1.5em;"><span id="grafico"><span style="font-size: 0.85em; color:' + FIFO[i][0] + ';"><strong>P' + FIFO[i][1] + '</strong></span>' + quadrados + '</span></div>';
 
                         document.getElementById('fila-prontos').innerHTML += '<td id="' + FIFO[i][1]+ '" width="10%" style="background-color:' + FIFO[i][0] + ';"></td>';
                     }
@@ -665,7 +656,7 @@
                             quadrados += '<i class="fas fa-square-full text-white"></i>';
                         }
 
-                        document.getElementById('grafico-gantt').innerHTML += '<div id="'+ RR[i][0] + '" class="row mt-1" style="font-size: 1.5em;"><span id="grafico">P' + RR[i][1] + quadrados + '</span></div>';
+                        document.getElementById('grafico-gantt').innerHTML += '<div id="'+ RR[i][0] + '" class="row mt-1" style="font-size: 1.5em;"><span id="grafico"><span style="font-size: 0.85em; color: ' + RR[i][0] + ';"><strong>P' + RR[i][1] + '</strong></span>' + quadrados + '</span></div>';
 
                         document.getElementById('fila-prontos').innerHTML += '<td id="' + RR[i][1]+ '" width="10%" style="background-color:' + RR[i][0] + ';"></td>';
                     }
