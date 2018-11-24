@@ -355,6 +355,7 @@
         let numeroPaginasTotal = 50;
         let cont = 1;
         let processosSelecionados = [];
+        let SJF = [];
 
         let tChegada = parseInt(document.getElementById('tempo-chegada').value);
         let tExecucao = parseInt(document.getElementById('tempo-execucao').value);
@@ -472,6 +473,39 @@
 
             }
         }
+
+        function sjf() {
+            console.log(SJF[0][1]);
+            document.getElementById(SJF[0][1]).style.display = 'none';
+            document.getElementById('circulo').style.display = 'block';
+            document.getElementById('circulo').style.color = SJF[0][0];  
+            contador++;
+            if(contador <= SJF[0][3]){
+                document.getElementById(SJF[0][0]).innerHTML += '<i class="fas fa-square-full text-success"></i>';
+                turnaround++;
+                for(i = 1; i < SJF.length; i++){
+                    if(seg >= SJF[i][2]){
+                        document.getElementById(SJF[i][0]).innerHTML += '<i class="fas fa-square-full text-warning"></i>';
+                        turnaround++;
+                    }
+                }
+                pararSeTimeout = setTimeout(sjf, 1000);
+            } else {
+                SJF.shift();
+                processos--;
+                document.getElementById('processo').innerHTML = '<span class="" href="#">PROCESSOS<br>' + processos + '</span>';
+                if(SJF.length > 0){
+                    contador = 0;
+                    setTimeout(sjf, (SJF[0][2]-seg)*1000);
+                } else {
+                    turnaround = turnaround/qtdprocessos;
+                    alert(turnaround);
+                    document.getElementById('circulo').style.display = 'none';
+                }
+
+            }
+        }
+
 
         function remove(parent,child){
             let p = document.getElementById(parent);
@@ -715,7 +749,8 @@
 
             FIFO.push([cor, PID, parseInt(document.getElementById('tempo-chegada').value), parseInt(document.getElementById('tempo-execucao').value)]);
             RR.push([cor, PID, parseInt(document.getElementById('tempo-chegada').value), parseInt(document.getElementById('tempo-execucao').value)]);
-            EDF.push([cor, PID, parseInt(document.getElementById('tempo-chegada').value), parseInt(document.getElementById('tempo-execucao').value), parseInt(document.getElementById('deadline').value)]);            
+            EDF.push([cor, PID, parseInt(document.getElementById('tempo-chegada').value), parseInt(document.getElementById('tempo-execucao').value), parseInt(document.getElementById('deadline').value)]);   
+            SJF.push([cor, PID, parseInt(document.getElementById('tempo-chegada').value), parseInt(document.getElementById('tempo-execucao').value)]);         
             memo.push([cor, PID, parseInt(document.getElementById('tempo-chegada').value), parseInt(document.getElementById('tempo-execucao').value)]);
 
             FIFO.sort(function(a, b) {
@@ -732,6 +767,15 @@
                     return x < y ? -1 : x > y ? 1 : 0;
                 }
                 return a[2] - b[2];
+            });
+            SJF.sort(function(a, b){
+                if (a[2] == b[2]){
+                    if (a[3]<b[3]){
+                        return -1;
+                    } 
+                    return 0;
+                }
+                return a[2]-b[2];
             });
             memo.sort(function(a, b) {
                 return a[2]-b[2];
@@ -803,6 +847,19 @@
                         document.getElementById('fila-prontos').innerHTML += '<td id="' + EDF[i][1]+ '" width="10%" style="background-color:' + EDF[i][0] + ';"></td>';                        
                     }
                     setTimeout(edf, (EDF[0][2]-1)*1000);
+                }
+            } else if (document.getElementById('escalonamento').value == 'sjf'){
+                if(SJF.length != 0){
+                    for(i=0; i< SJF.length; i++){
+                        quadrados = '';
+                        for(j=0; j< SJF[i][2]; j++){
+                            quadrados += '<i class="fas fa-square-full text-white"></i>';
+                        }
+                       document.getElementById('grafico-gantt').innerHTML += '<div id="'+ SJF[i][0] + '" class="row mt-1" style="font-size: 1.5em;"><span id="grafico"><span style="font-size: 0.85em; color: ' + SJF[i][0] + ';"><strong>P' + SJF[i][1] + '</strong></span>' + quadrados + '</span></div>';
+
+                        document.getElementById('fila-prontos').innerHTML += '<td id="' + SJF[i][1]+ '" width="10%" style="background-color:' + SJF[i][0] + ';"></td>';                        
+                    }
+                    setTimeout(sjf, (SJF[0][2]-1)*1000);
                 }
             }
         }
