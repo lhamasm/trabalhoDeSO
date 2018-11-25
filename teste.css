@@ -46,7 +46,7 @@ header nav ul {
   border-radius: 1em;
   background-color: rgba(200, 200, 200);
   padding: 1em;
-  height: 20vw;
+  height: 21vw;
 }
 
 .gerenciador-processador p{
@@ -119,5 +119,15 @@ h5 {
 
 .colorir {
     background-color: rgba(0, 0, 0, 0.075);
+}
+
+#grafico-gantt {
+  border: none;
+}
+
+#grafico-gantt td {
+  border: none;
+  padding: 0;
+  font-size: 1.5em;
 }
 
