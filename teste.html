@@ -194,16 +194,7 @@
                                 <table>
                                     <tbody>
                                         <tr id="fila-espera">
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
+                                            
                                         </tr>
                                     </tbody>
                                 </table>
@@ -238,14 +229,12 @@
                 <div class="col-4">
                     <div class="gerenciador-processos shadow">
                         <h6 class="text-center">Tabela de Páginas</h6>
-                        <div class="row">
-                            <div class="offset-3 col-2 bg-info">
-                                MEMORIA VIRTUAL
-                            </div>
+                        <div class="scroll-tabela mt-3 ml-2">
+                            <table class="m-auto" style="border: 1px solid #c0c0c0;">
+                                <tbody  id="tabela-paginas" >
 
-                            <div class="offset-2 col-2 bg-success">
-                                MEMORIA FISICA
-                            </div>
+                                </tbody>
+                            </table>                            
                         </div>
                     </div>
                 </div>
@@ -364,6 +353,8 @@
         let contador = 0;
         let espera = [];
         let EDF = [];
+        let posicaoPaginas = [7]; // vetor com a posicao de cada pagina na ram, se estiver na ram
+        let memoriaRam = [];  // vetor com o contador de todas as paginas da ram
         let pararSeTimeout;
         let pararSeTimeout2;
         let numeroPaginas = 7;
@@ -376,9 +367,15 @@
         let SJF = [];
         let PRIORIDADE = [];
         let pausado = false;
+        let proxPag = 0;
 
         let escalonamento = document.getElementById('escalonamento').value;
         let paginacao = document.getElementById('paginacao').value;
+
+
+        for(i=0; i<50; i++){
+            memoriaRam.push([-1, -1, 0]);
+        }
 
         function tempo() {
             seg++; 
@@ -448,6 +445,10 @@
                         for(j = 0; j < numeroPaginas; j++){
                             if(numeroPaginasTotal-cont+1 > 0){
                                 document.getElementById('m' + String(cont)).style.backgroundColor = memo[i][0];
+                                memoriaRam[cont-1][0] = i;
+                                memoriaRam[cont-1][1] = j;
+                                memo[i][4][j] = cont;
+                                document.getElementById('tp-' + memo[i][1] + '-' + String(j+1)).innerHTML = cont; 
                                 cont++;
                             } else {
                                 for(k = 1; k <= numeroPaginas-j; k++){
@@ -476,43 +477,119 @@
         }
 
 
+        function fifoPag(proc){
+            let temPag = false;
+            for (i = 0; i<memo.length; i++){
+                if (proc[1]==memo[i][1]){
+                    let transf = 0;
+                    let pag = 0;
+                    while(pag < 7){
+                        if (transf < 4){
+                            if (document.getElementById('circulo').style.backgroundColor!=memoriaRam[proxPag][0][0]){
+                                if (memo[i][4][pag]==0){
+                                    document.getElementById('tp-' + String(memo[memoriaRam[proxPag][0]][1]) + '-' + String(memoriaRam[proxPag][1])).innerHTML = '-';
+                                    document.getElementById('tp-' + String(proc[1]) + '-' + String(pag)).innerHTML = proxPag+1;
+                                    document.getElementById(String(proc[1]) + '-' + String(pag)).style.backgroundColor = rgba(200, 200, 200);
+                                    document.getElementById(String(proxPag+1)).style.backgroundColor = proc[0];
+                                    
+                                    memo[i][4][pag] = proxPag; //ta certo?
+                                    memoriaRam[proxPag][0] = i;
+                                    memoriaRam[proxPag][1] = pag;
+
+                                    transf++;
+                                    pag++;
+                                } else {
+                                    break;
+                                }
+                            }
+                            proxPag++;
+                            if (proxPag==50){
+                                proxPag = 0;
+                            }
+                        } else {
+                            if (pag < 6 && memo[i][4][pag+1]==0){
+                                temPag = true;
+                            }
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
+            if (temPag){
+                setTimeout(fifoPag(proc), 1000);
+            } else {
+                remove('fila-espera', 'espera-'+String(proc[1]));
+                document.getElementById('fila-prontos').innerHTML += '<td id="' + proc[1]+ '" width="10%" style="background-color:' + proc[0] + ';"></td>'; //mudar ID
+                FIFO.push(proc);
+            }
+        }
         
         function fifo() {
             if(FIFO.length > 0){
                 if(!FIFO[0][4]){
-                    FIFO[0][5] = true;
-                    document.getElementById(FIFO[0][1]).style.display = 'none';
-                    document.getElementById('circulo').style.display = 'block';
-                    document.getElementById('circulo').style.color = FIFO[0][0];  
-                    contador++;
-                    if(contador <= FIFO[0][3]){
-                        document.getElementById(FIFO[0][0]).innerHTML += '<td><i class="fas fa-square-full text-success"></i></td>';
-                        turnaround++;
-                        for(i = 1; i < FIFO.length; i++){
-                            if(!FIFO[i][4]){
-                                if(seg >= FIFO[i][2]){
-                                    document.getElementById(FIFO[i][0]).innerHTML += '<td><i class="fas fa-square-full text-warning"></i></td>';
+                    let pageFault = false;
+                    let indice;
+                    for (i = 0; i<memo.length; i++){
+                        if (memo[i][1]==FIFO[0][1]){
+                            indice = i;
+                            break;
+                        }
+                    }
+                    /*for (j = 6; j>=0; j--){
+                        if (memo[indice][4][j]==0){
+                            pageFault = true;
+                            break;
+                        }
+                    }*/
+                    for (j = 1; j<=7; j++){
+                        if (document.getElementById('tp-' + String(memo[i][1]) + '-' + String(j)).innerHTML == '-'){
+                            pageFault = true;
+                            break;
+                        }
+                    }
+
+                    if (!pageFault){
+                        FIFO[0][5] = true;
+                        document.getElementById(FIFO[0][1]).style.display = 'none';
+                        document.getElementById('circulo').style.display = 'block';
+                        document.getElementById('circulo').style.color = FIFO[0][0];  
+                        contador++;
+                        if(contador <= FIFO[0][3]){
+                            document.getElementById(FIFO[0][0]).innerHTML += '<td><i class="fas fa-square-full text-success"></i></td>';
+                            turnaround++;
+                            for(i = 1; i < FIFO.length; i++){
+                                if(!FIFO[i][4]){
+                                    if(seg >= FIFO[i][2]){
+                                        document.getElementById(FIFO[i][0]).innerHTML += '<td><i class="fas fa-square-full text-warning"></i></td>';
+                                        turnaround++;
+                                    }
+                                }else{
+                                    document.getElementById(FIFO[i][0]).innerHTML += '<td><i class="fas fa-square-full text-info"></i></td>';
                                     turnaround++;
                                 }
-                            }else{
-                                document.getElementById(FIFO[i][0]).innerHTML += '<td><i class="fas fa-square-full text-info"></i></td>';
-                                turnaround++;
                             }
-                        }
-                        pararSeTimeout = setTimeout(fifo, 1000);
-                    } else {
-                        FIFO.shift();
-                        processos--;
-                        document.getElementById('processo').innerHTML = '<span class="" href="#">PROCESSOS<br>' + processos + '</span>';
-                        if(FIFO.length > 0){
-                            contador = 0;
-                            setTimeout(fifo, (FIFO[0][2]-seg)*1000);
+                            pararSeTimeout = setTimeout(fifo, 1000);
                         } else {
-                            turnaround = turnaround/qtdprocessos;
-                            alert(turnaround);
-                            document.getElementById('circulo').style.display = 'none';
-                        }
+                            FIFO.shift();
+                            processos--;
+                            document.getElementById('processo').innerHTML = '<span class="" href="#">PROCESSOS<br>' + processos + '</span>';
+                            if(FIFO.length > 0){
+                                contador = 0;
+                                setTimeout(fifo, (FIFO[0][2]-seg)*1000);
+                            } else {
+                                turnaround = turnaround/qtdprocessos;
+                                alert(turnaround);
+                                document.getElementById('circulo').style.display = 'none';
+                            }
 
+                        }
+                    } else {
+                        remove('fila-prontos', memo[indice][1]);
+                        document.getElementById('fila-espera').innerHTML += '<td id="espera-' + memo[indice][1] + '" width="10%" style="background-color:' + memo[indice][0] + ';"></td>';
+                        let p = FIFO.shift();
+                        fifoPag(p);
+                        fifo();
                     }
                 } else {
                     contador = 0;
@@ -1078,8 +1155,21 @@
 
             document.getElementById('disco').innerHTML += '<tr><td width="10%" style="border: 0px">P' + PID + '</td><td id="' + PID + '-1"></td><td id="' + PID + '-2"></td><td id="' + PID + '-3"></td><td id="' + PID + '-4"></td><td id="' + PID + '-5"></td><td id="' + PID + '-6"></td><td id="' + PID + '-7"></td></tr>';
 
+            if (processos>=1){
+                for (i = 1; i<=7; i++){
+                    document.getElementById('linha-' + String(i)).innerHTML += '<td id = "tp-' + PID + '-' + i + '">-</td>';
+                }
+                document.getElementById('linha-0').innerHTML += '<td id = "tp-' + PID + '-0" style="background-color:' + cor + ';"></td>';
+            } else {
+                document.getElementById('tabela-paginas').innerHTML += '<tr id="linha-0"><td id="tp-' + PID + '-0" style="background-color: ' + cor + ';"></td></tr><tr id="linha-1"><td id = "tp-' + PID + '-1">-</td></tr><tr id="linha-2"><td id = "tp-' + PID + '-2">-</td></tr><tr id="linha-3"><td id = "tp-' + PID + '-3">-</td></tr><tr id="linha-4"><td id = "tp-' + PID + '-4">-</td></tr><tr id="linha-5"><td id = "tp-' + PID + '-5">-</td></tr><tr id="linha-6"><td id = "tp-' + PID + '-6">-</td></tr><tr id="linha-7"><td id = "tp-' + PID + '-7">-</td></tr>';
+            }
+
             processos++;
             qtdprocessos++;
+
+            for(i=0; i<7; i++){
+                posicaoPaginas[i] = 0;
+            }
 
             if(parseInt(document.getElementById('tempo-chegada').value) >= seg){
                 FIFO.push([cor, PID, parseInt(document.getElementById('tempo-chegada').value), parseInt(document.getElementById('tempo-execucao').value), suspenso, executandoProcesso]);
@@ -1087,7 +1177,7 @@
                 EDF.push([cor, PID, parseInt(document.getElementById('tempo-chegada').value), parseInt(document.getElementById('tempo-execucao').value),suspenso, executandoProcesso,  parseInt(document.getElementById('deadline').value)]);            
                 SJF.push([cor, PID, parseInt(document.getElementById('tempo-chegada').value), parseInt(document.getElementById('tempo-execucao').value), suspenso, executandoProcesso]);  
                 PRIORIDADE.push([cor, PID, parseInt(document.getElementById('tempo-chegada').value), parseInt(document.getElementById('tempo-execucao').value), suspenso, executandoProcesso, parseInt(document.getElementById('PRIO').value)]);  
-                memo.push([cor, PID, parseInt(document.getElementById('tempo-chegada').value), parseInt(document.getElementById('tempo-execucao').value)]);
+                memo.push([cor, PID, parseInt(document.getElementById('tempo-chegada').value), parseInt(document.getElementById('tempo-execucao').value), posicaoPaginas]);
 
                 FIFO.sort(function(a, b) {
                     return a[2]-b[2];
