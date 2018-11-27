@@ -58,8 +58,8 @@
                         <div class="col-6">
                             <label for="paginacao">Paginação</label>
                             <select class="form-control custom-select"  id="paginacao" style="font-size:0.9em;">
-                                <option>FIFO</option>
-                                <option>MRU</option>
+                                <option value = "fifop">FIFO</option>
+                                <option value = "mrup">MRU</option>
                             </select>
                         </div>
                     </div>
@@ -368,7 +368,7 @@
         let PRIORIDADE = [];
         let pausado = false;
         let proxPag = 0;
-
+        let transf = 0;
         let escalonamento = document.getElementById('escalonamento').value;
         let paginacao = document.getElementById('paginacao').value;
 
@@ -476,12 +476,62 @@
            while (currentTime + miliseconds >= new Date().getTime()) {}
         }
 
+        function mru(procelso){
+            let repete = false;
+            transf = 0;
+            memoriaRam.sort(function(a, b){ // ordena vetor da memoria ram
+                return a[2] - b[2];
+            });
+            for(i=0; i<memo.length; i++){
+                if(memo[i][1] == procelso[1]){
+                    for(j=0; j<memoriaRam.length; j++){
+                        if(transf < 4){
+                            var indiceProcesso = memoriaRam[j][0]; // indice do processo q tem a pagina 
+                            if(memo[indiceProcesso][0] != document.getElementById('circulo').style.color){
+                                var indicePagina = memoriaRam[j][1]; // indice da pagina q vai ser retirada
+                                for(k=0; k<memo[i][4].length; k++){
+                                    if(k < 6 && memo[i][4][k+1] == -1){
+                                        repete = true;
+                                    }
+                                    if(memo[i][4][k] == -1){ // busca pagina q n esta na ram
+                                        memo[i][4][k] = memo[indiceProcesso][4][indicePagina]; //atualiza tabela de paginas
+                                        memo[indiceProcesso][4][indicePagina] = -1;
+                                        memoriaRam[j][0] = i;
+                                        memoriaRam[j][1] = k;
+                                        memoriaRam[j][2] = seg+1;
+                                        document.getElementById(String(memo[i][1]) + '-' + String(j+1)).style.backgroundColor = '';
+                                        document.getElementById('m' + String(memo[i][4][k])).style.backgroundColor = memo[i][0];
+                                        transf++;
+                                        for(o=1; o<=7; o++){
+                                            if(document.getElementById(String(memo[indiceProcesso][1]) + '-' + String(o)).style.backgroundColor == ''){
+                                                document.getElementById(String(memo[indiceProcesso][1]) + '-' + String(o)).style.backgroundColor == memo[indiceProcesso][0];
+                                                break;
+                                            }
+                                        }
+                                        break;
+                                    } 
+                                }
+                            }
+                        }
+                    }
+                    break;
+                }
+            }
+            if(repete == true){
+                setTimeout(mru(procelso), 1000);
+            }
+            else{
+                remove('fila-espera', 'espera-'+String(procelso[1]));
+                document.getElementById('fila-prontos').innerHTML += '<td id="' + procelso[1]+ '" width="10%" style="background-color:' + procelso[0] + ';"></td>'; //mudar ID
+                FIFO.push(procelso);                    
+            }            
+        }
 
         function fifoPag(proc){
             let temPag = false;
             for (i = 0; i<memo.length; i++){
                 if (proc[1]==memo[i][1]){
-                    let transf = 0;
+                    transf = 0;
                     let pag = 0;
                     while(pag < 7){
                         if (transf < 4){
@@ -524,7 +574,12 @@
                 FIFO.push(proc);
             }
         }
-        
+
+        function gerarPagAleatoria(){
+            var numero = Math.floor(Math.random() * 7);
+            return numero;
+        }
+
         function fifo() {
             if(FIFO.length > 0){
                 if(!FIFO[0][4]){
@@ -536,12 +591,6 @@
                             break;
                         }
                     }
-                    /*for (j = 6; j>=0; j--){
-                        if (memo[indice][4][j]==0){
-                            pageFault = true;
-                            break;
-                        }
-                    }*/
                     for (j = 1; j<=7; j++){
                         if (document.getElementById('tp-' + String(memo[i][1]) + '-' + String(j)).innerHTML == '-'){
                             pageFault = true;
@@ -557,6 +606,20 @@
                         contador++;
                         if(contador <= FIFO[0][3]){
                             document.getElementById(FIFO[0][0]).innerHTML += '<td><i class="fas fa-square-full text-success"></i></td>';
+                            for(i=0; i<memo.length; i++){ // PROCURAR no vetor do memo
+                                if(memo[i][1] == FIFO[0][1]){ // o processo q vai executar agora, pelo pid
+                                    var pag = gerarPagAleatoria(); // gerar a pagina que será utilizada agora
+                                    if(document.getElementById('paginacao').value == 'mrup'){ // se o algoritmo de paginaçao for mru
+                                        for(j=0; j<memoriaRam.length; j++){ // procurar na memoria ram
+                                           if(memoriaRam[j][0] == i && memoriaRam[j][1] == pag){ // a pagina do processo q foi utilizada
+                                                memoriaRam[j][2] = seg; // e atribuir a ela o contador seg 
+                                                break;
+                                            }
+                                        }
+                                    }
+                                break;
+                                }
+                            }                            
                             turnaround++;
                             for(i = 1; i < FIFO.length; i++){
                                 if(!FIFO[i][4]){
@@ -588,7 +651,12 @@
                         remove('fila-prontos', memo[indice][1]);
                         document.getElementById('fila-espera').innerHTML += '<td id="espera-' + memo[indice][1] + '" width="10%" style="background-color:' + memo[indice][0] + ';"></td>';
                         let p = FIFO.shift();
-                        fifoPag(p);
+                        if(document.getElementById('paginacao').value == 'mrup'){
+                            mru(p);
+                        }
+                        else{
+                            fifoPag(p);
+                        }
                         fifo();
                     }
                 } else {
@@ -1000,6 +1068,7 @@
                                     }
                                 } else {
                                     document.getElementById(PRIORIDADE[i][0]).innerHTML += '<td><i class="fas fa-square-full text-info"></i></td>';
+                                    turnaround++;
                                 }
                             }
                             pararSeTimeout = setTimeout(prio, 1000);
@@ -1036,6 +1105,7 @@
                                             }
                                         }else {
                                             document.getElementById(PRIORIDADE[i][0]).innerHTML += '<td><i class="fas fa-square-full text-info"></i></td>';
+                                            turnaround++;
                                         }
                                     }                            
 
@@ -1052,6 +1122,7 @@
                                                     }
                                                 }else {
                                                     document.getElementById(PRIORIDADE[j][0]).innerHTML += '<td><i class="fas fa-square-full text-info"></i></td>';
+                                                    turnaround++;
                                                 }
                                             }
                                             
@@ -1080,6 +1151,7 @@
                     if(bloqueados.length == PRIORIDADE.length){
                         for(i = 0; i < bloqueados.length; i++){
                             document.getElementById(PRIORIDADE[i][0]).innerHTML += '<td><i class="fas fa-square-full text-info"></i></td>';
+                            turnaround++;
                         }
                         setTimeout(prio, 1000);
                     } else {
@@ -1168,7 +1240,7 @@
             qtdprocessos++;
 
             for(i=0; i<7; i++){
-                posicaoPaginas[i] = 0;
+                posicaoPaginas[i] = -1;
             }
 
             if(parseInt(document.getElementById('tempo-chegada').value) >= seg){
