@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="view-port" content="width=width-device, initial-scale=1.0, shrink-to-fit=no">
+    <title>Trabalho de Sistemas Operacionais</title>
+
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
+    <!-- Custom styles for this template -->
+    <link href="teste.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+    <header>
+        <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
+            <div class="container-fluid">
+                <form class="form-inline">
+                    <button class="btn btn-outline-dark control" type="button" onclick="sidebar()"><i class="text-light fas fa-bars"></i></button>
+                    <div class="vl"></div>
+                    <button id="comecar" class="btn btn-success ml-4" type="button" onclick="alocacaoMemoria(); run();"><i class="fas fa-play"></i></button>
+                    <button id="pausar" class="btn btn-warning text-white" type="button" onclick="pause()" disabled><i class="fas fa-pause"></i></i></button>
+                    <button id="parar" class="btn btn-danger" type="button" onclick="stop()" disabled><i class="fas fa-stop"></i></i></button>
+                </form>
+                <ul class="navbar-nav p-1" style="color: #C0C0C0; font-size: 0.85em;">
+                    <li id="tempo" class="nav-item ml-5 text-center"><span class="" href="#">TEMPO<br>0</span></li>
+                    <li id="processo" class="nav-item ml-5 text-center"><span class="" href="#">PROCESSOS<br>0</span></li>
+                    <li id="memolivre" class="nav-item ml-5 text-center"><span class="" href="#">MEMÓRIA LIVRE<br>100%</span></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <div id="mySidenav" class="sidenav text-white">
+        <div class="p-3" style="display: block; transition: 0.3s;">
+            <h5 class="text-center">Algoritmos</h5>
+            <hr style="background-color: #C8C8C8;">
+            <form>
+                <div class="form-group">    
+                    <div class="row">   
+                        <div class="col-6">             
+                            <label for="escalonamento">Escalonamento</label>
+                            <select class="form-control custom-select" id="escalonamento" onchange="desabilitar()" style="font-size:0.9em;">
+                                <option value="fifo">FIFO</option>
+                                <option value="rr">Round Robin</option>
+                                <option value="edf">EDF</option>
+                                <option value="sjf">SJF</option>
+                                <option value="prio">PRIORIDADE</option>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <label for="paginacao">Paginação</label>
+                            <select class="form-control custom-select"  id="paginacao" style="font-size:0.9em;">
+                                <option value = "fifop">FIFO</option>
+                                <option value = "mrup">MRU</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label for="quantum">Quantum</label>
+                            <input class="form-control" type="number" id="quantum" min="1" style="font-size:0.9em;">
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label for="sobrecarga">Sobrecarga</label>
+                            <input class="form-control" type="number" id="sobrecarga" min="1" max="5" style="font-size:0.9em;">
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <h5 class="text-center">Gerenciador de Processos</h5>
+            <hr style="background-color: #C8C8C8;">
+            <div class="row">
+                <span class="col-8 scroll mt-2">
+                    <table class="table-hover table-sm">
+                        <thead>
+                            <tr>
+                                <th>COR</th>
+                                <th>PID</th>
+                                <th>TC</th>
+                                <th>TE</th>
+                                <th>TR</th>
+                                <th>DD</th>
+                                <th title="PRIORIDADE">PR</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabela-processos">
+                            
+                        </tbody>
+                    </table>
+                </span>
+
+                <div class="col-4 mt-2">
+                    <button class="btn btn-block btn-midnight" type="button" data-toggle="modal" data-target="#criar-processo" style="font-size: 0.7em;"><strong>Criar</strong></button>
+                    <button id="suspender" class="btn btn-block btn-midnight" type="button" style="font-size: 0.7em;" onclick="suspenderProcessos()" disabled><strong>Suspender</strong></button>
+                    <button id="prosseguir" class="btn btn-block btn-midnight" type="button" style="font-size: 0.7em;" onclick="prosseguirProcessos()" disabled><strong>Prosseguir</strong></button>
+                    <button id="finalizar" class="btn btn-block btn-midnight" type="button" style="font-size: 0.7em;" onclick="finalizarProcessos()" disabled><strong>Finalizar</strong></button>
+                    <button id="prioridade" class="btn btn-block btn-midnight" type="button" data-toggle="modal" data-target="#alterar-prioridade" style="font-size: 0.7em;" disabled><strong>Prioridade</strong></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="main" class="pt-5 pl-0 pr-2 mt-4">
+        <div id="criar-processo" class="modal fade">
+            <div class="modal-dialog modal-dialog-centered" style="width: 25em; font-family: robotoBold;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Criar Processo</h4>
+                        <button type="button" class="close" data-dismiss="modal">&times</button>
+                    </div>
+
+                    <form>
+
+                        <div class="modal-body">
+                            
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <label for="tempo-chegada">Tempo de Chegada</label>
+                                        <input type="number" class="form-control" id="tempo-chegada" min="1" required> 
+                                    </div>
+                                    <div class="col-6">
+                                        <label for="PRIO">Prioridade</label>
+                                        <input type="number" class="form-control" id="PRIO" min="1" required> 
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-6">
+                                        <label for="tempo-execucao">Tempo de Execução</label>
+                                        <input type="number" class="form-control" id="tempo-execucao" min="1" required> 
+                                    </div>
+                                    <div class="col-6">
+                                        <label for="deadline">Deadline</label>
+                                        <input type="number" class="form-control" id="deadline" min="1" required> 
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+
+                        <div class="modal-footer">
+                            <button class="btn btn-success" type="submit" data-dismiss="modal" onclick="criar_processo()">Confirmar</button>
+                            <button class="btn btn-info" type="button" onclick="criar_processo()">Confirmar e Criar Novo</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="container-fluid ">
+            <div class="row">
+                <div class="col-4">
+                    <div class="gerenciador-processador shadow ">
+                        <h6 class="text-center mb-2">Gerenciador do Processador</h6>
+
+                        <p class="text-center">CPU</p>
+                        <div class="row mb-2">
+                            <div class="offset-5 col-2 d-flex justify-content-center" style="height: 3em; border: 2px solid black;" >
+                                <i id="circulo" class="fas fa-circle mt-2" style="font-size: 1.5em; display: none;"></i>
+                            </div>
+                        </div>
+
+                        <p>PRONTOS</p>
+                        <div class="row mb-1">
+                            <div class="filas ml-3">
+                                <table>
+                                    <tbody>
+                                        <tr id="fila-prontos">
+                                            
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>  
+                        </div>
+
+                        <p>ESPERA</p>
+                        <div class="row mb-1">
+                            <div class="ml-3 filas">
+                                <table>
+                                    <tbody>
+                                        <tr id="fila-espera">
+                                            
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>  
+                        </div>
+
+                        <p>SUSPENSOS</p>
+                        <div class="row mb-1">
+                            <div class="filas ml-3">
+                                <table>
+                                    <tbody>
+                                        <tr id="fila-suspensos">
+                                            
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>  
+                        </div>
+
+
+                    </div>
+                </div>
+                <div class="col-8 scroll-gantt">
+                    <table id="grafico-gantt" >
+                        
+                  </table>
+                </div>
+            </div>
+
+            <div class="row mt-3">
+
+                <div class="col-4">
+                    <div class="gerenciador-processos shadow">
+                        <h6 class="text-center">Tabela de Páginas</h6>
+                        <div class="scroll-tabela mt-3 ml-2">
+                            <table class="m-auto" style="border: 1px solid #c0c0c0;">
+                                <tbody  id="tabela-paginas" >
+
+                                </tbody>
+                            </table>                            
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-4">
+                    <div class="gerenciador-processos shadow">
+                        <h6 class="text-center mb-3">RAM</h6>
+                        <div class="ram m-auto">
+                            <table class="table-sm m-auto">
+                                <tbody>
+                                    <tr>
+                                        <td id="m1">1</td>
+                                        <td id="m2">2</td>
+                                        <td id="m3">3</td>
+                                        <td id="m4">4</td>
+                                        <td id="m5">5</td>
+                                        <td id="m6">6</td>
+                                        <td id="m7">7</td>
+                                        <td id="m8">8</td>
+                                        <td id="m9">9</td>
+                                        <td id="m10">10</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td id="m11">11</td>
+                                        <td id="m12">12</td>
+                                        <td id="m13">13</td>
+                                        <td id="m14">14</td>
+                                        <td id="m15">15</td>
+                                        <td id="m16">16</td>
+                                        <td id="m17">17</td>
+                                        <td id="m18">18</td>
+                                        <td id="m19">19</td>
+                                        <td id="m20">20</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td id="m21">21</td>
+                                        <td id="m22">22</td>
+                                        <td id="m23">23</td>
+                                        <td id="m24">24</td>
+                                        <td id="m25">25</td>
+                                        <td id="m26">26</td>
+                                        <td id="m27">27</td>
+                                        <td id="m28">28</td>
+                                        <td id="m29">29</td>
+                                        <td id="m30">30</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td id="m31">31</td>
+                                        <td id="m32">32</td>
+                                        <td id="m33">33</td>
+                                        <td id="m34">34</td>
+                                        <td id="m35">35</td>
+                                        <td id="m36">36</td>
+                                        <td id="m37">37</td>
+                                        <td id="m38">38</td>
+                                        <td id="m39">39</td>
+                                        <td id="m40">40</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td id="m41">41</td>
+                                        <td id="m42">42</td>
+                                        <td id="m43">43</td>
+                                        <td id="m44">44</td>
+                                        <td id="m45">45</td>
+                                        <td id="m46">46</td>
+                                        <td id="m47">47</td>
+                                        <td id="m48">48</td>
+                                        <td id="m49">49</td>
+                                        <td id="m50">50</td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+
+
+                    </div>
+                </div>
+
+                <div class="col-4">
+                    <div class="gerenciador-processos shadow">
+                        <h6 class="text-center">Disco</h6>
+
+                        <div class="scroll-disco mt-2">
+                            <table class="m-auto" style="border: 1px solid #c0c0c0; width: 80%;">
+                                <tbody id="disco">
+                                    
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> 
+
+    <script type="text/javascript">
+
+        let FIFO = [];
+        let RR = [];
+        let EDF = [];
+        let SJF = [];
+        let PRIORIDADE = [];
+        let memo = [];
+        let bloqueados = [];
+        let processosSelecionados = [];
+
+        let memoriaRam = [];
+        let trasnf = 0;
+        let proxPag = 0;
+
+        let quadroPagina = 1;
+        let numeroPaginasTotal = 50;
+        let numeroPaginas = 7;
+        let posicaoPaginas = [7];
+
+        let seg = -1;
+        let processos = 0;
+        let seed = 0.753;
+
+        let pausado = false;
+        let start;
+        let suspenso = false;
+        let executandoProcesso = false;
+
+        let PID = 0;
+        let turnaround = 0;
+        let contador = 0;
+        let qtdprocessos = 0;
+        let temporestante = 0;
+
+        for(i=0; i<50; i++){
+            memoriaRam.push([-1, -1, 0]);
+        }
+
+        function alocacaoMemoria(){
+            for(i = 0; i < memo.length; i++){
+                if(seg == memo[i][2]){
+                    if(numeroPaginasTotal-quadroPagina+1 > 0){
+                        for(j = 0; j < numeroPaginas; j++){
+                            if(numeroPaginasTotal-quadroPagina+1 > 0){
+                                document.getElementById('m' + String(quadroPagina)).style.backgroundColor = memo[i][0];
+                                memoriaRam[quadroPagina-1][0] = i;
+                                memoriaRam[quadroPagina-1][1] = j;
+                                memo[i][4][j] = quadroPagina;
+                                document.getElementById('tp-' + memo[i][1] + '-' + String(j+1)).innerHTML = quadroPagina; 
+                                quadroPagina++;
+                            } else {
+                                for(k = 1; k <= numeroPaginas-j; k++){
+                                    document.getElementById(String(memo[i][1]) + '-' + String(k)).style.backgroundColor = memo[i][0];
+                                }
+                                break;
+                            }
+                        }
+                    } else {
+                        for(k = 1; k <= numeroPaginas; k++){
+                            document.getElementById(String(memo[i][1]) + '-' + String(k)).style.backgroundColor = memo[i][0];
+                        }
+                    }
+                } 
+            }
+
+            if(memo.length > 0){
+                setTimeout(alocacaoMemoria, 1000);
+            } 
+        }
+
+        /* ALGORITMOS DE PAGINAÇÃO */
+
+        function mru(procelso){
+            let repete = false;
+            transf = 0;
+            memoriaRam.sort(function(a, b){ // ordena vetor da memoria ram
+                return a[2] - b[2];
+            });
+            for(i=0; i<memo.length; i++){
+                if(memo[i][1] == procelso[1]){
+                    for(j=0; j<memoriaRam.length; j++){
+                        if(transf < 4){
+                            let indiceProcesso = memoriaRam[j][0]; // indice do processo q tem a pagina 
+                            if(memo[indiceProcesso][0] != document.getElementById('circulo').style.color){
+                                let indicePagina = memoriaRam[j][1]; // indice da pagina q vai ser retirada
+                                for(k=0; k<memo[i][4].length; k++){
+                                    if(k < 6 && memo[i][4][k+1] == -1){
+                                        repete = true;
+                                    }
+                                    if(memo[i][4][k] == -1){ // busca pagina q n esta na ram
+                                        memo[i][4][k] = memo[indiceProcesso][4][indicePagina]; //atualiza tabela de paginas
+                                        memo[indiceProcesso][4][indicePagina] = -1;
+                                        memoriaRam[j][0] = i;
+                                        memoriaRam[j][1] = k;
+                                        memoriaRam[j][2] = seg+1;
+                                        document.getElementById(String(memo[i][1]) + '-' + String(j+1)).style.backgroundColor = '';
+                                        //document.getElementById('m' + String(memo[i][4][k])).style.backgroundColor = memo[i][0];
+                                        transf++;
+                                        for(o=1; o<=7; o++){
+                                            if(document.getElementById(String(memo[indiceProcesso][1]) + '-' + String(o)).style.backgroundColor == ''){
+                                                document.getElementById(String(memo[indiceProcesso][1]) + '-' + String(o)).style.backgroundColor == memo[indiceProcesso][0];
+                                                break;
+                                            }
+                                        }
+                                        break;
+                                    } 
+                                }
+                            }
+                        } 
+                    }
+                    break;
+                }
+            }
+            if(repete == true){
+                setTimeout(mru(procelso), 1000);
+            }
+            else{
+                remove('fila-espera', 'espera-'+String(procelso[1]));
+                document.getElementById('fila-prontos').innerHTML += '<td id="' + procelso[1]+ '" width="10%" style="background-color:' + procelso[0] + ';"></td>'; //mudar ID
+                FIFO.push(procelso);                    
+            }            
+        }
+
+        function fifoPag(proc){
+            let temPag = false;
+            for (i = 0; i<memo.length; i++){
+                if (proc[1]==memo[i][1]){
+                    transf = 0;
+                    let pag = 0;
+                    while(pag < 7){
+                        if (transf < 4){
+                            if (document.getElementById('circulo').style.backgroundColor!=memoriaRam[proxPag][0][0]){
+                                if (memo[i][4][pag]==0){
+                                    document.getElementById('tp-' + String(memo[memoriaRam[proxPag][0]][1]) + '-' + String(memoriaRam[proxPag][1])).innerHTML = '-';
+                                    document.getElementById('tp-' + String(proc[1]) + '-' + String(pag)).innerHTML = proxPag+1;
+                                    document.getElementById(String(proc[1]) + '-' + String(pag)).style.backgroundColor = rgba(200, 200, 200);
+                                    document.getElementById(String(proxPag+1)).style.backgroundColor = proc[0];
+                                    
+                                    memo[i][4][pag] = proxPag; //ta certo?
+                                    memoriaRam[proxPag][0] = i;
+                                    memoriaRam[proxPag][1] = pag;
+
+                                    transf++;
+                                    pag++;
+                                } else {
+                                    break;
+                                }
+                            }
+                            proxPag++;
+                            if (proxPag==50){
+                                proxPag = 0;
+                            }
+                        } else {
+                            if (pag < 6 && memo[i][4][pag+1]==0){
+                                temPag = true;
+                            }
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
+            if (temPag){
+                setTimeout(fifoPag(proc), 1000);
+            } else {
+                remove('fila-espera', 'espera-'+String(proc[1]));
+                document.getElementById('fila-prontos').innerHTML += '<td id="' + proc[1]+ '" width="10%" style="background-color:' + proc[0] + ';"></td>'; //mudar ID
+                FIFO.push(proc);
+            }
+        }
+
+        /* FIM DOS ALGORITMOS DE PAGINAÇÃO */
+
+
+        function gerarPagAleatoria(){
+            let numero = Math.floor(Math.random() * 7);
+            return numero;
+        }
+
+        function remove(parent,child){
+            let p = document.getElementById(parent);
+            let c = document.getElementById(child);
+            p.removeChild(c);
+        }
+
+        /* ALGORITMOS DE ESCALONAMENTO DE PROCESSOS */
+
+        function fifo() {
+            if(FIFO.length > 0){
+                if(!FIFO[0][4]){
+                    let pageFault = false;
+                    let indice;
+                    for (i = 0; i<memo.length; i++){
+                        if (memo[i][1]==FIFO[0][1]){
+                            indice = i;
+                            break;
+                        }
+                    }
+                    for (j = 1; j<=7; j++){
+                        if (document.getElementById('tp-' + String(memo[i][1]) + '-' + String(j)).innerHTML == '-'){
+                            pageFault = true;
+                            break;
+                        }
+                    }
+
+                    if (!pageFault){
+                        FIFO[0][5] = true;
+                        document.getElementById(FIFO[0][1]).style.display = 'none';
+                        document.getElementById('circulo').style.display = 'block';
+                        document.getElementById('circulo').style.color = FIFO[0][0];  
+                        contador++;
+                        if(contador <= FIFO[0][3]){
+                            document.getElementById(FIFO[0][0]).innerHTML += '<td><i class="fas fa-square-full text-success"></i></td>';
+                            let pag = gerarPagAleatoria(); // gerar a pagina que será utilizada agora
+                            if(document.getElementById('paginacao').value == 'mrup'){ // se o algoritmo de paginaçao for mru
+                                for(j=0; j<memoriaRam.length; j++){ // procurar na memoria ram
+                                   if(memoriaRam[j][0] == indice && memoriaRam[j][1] == pag){ // a pagina do processo q foi utilizada
+                                        memoriaRam[j][2] = seg; // e atribuir a ela o contador seg 
+                                        break;
+                                    }
+                                }
+                            }                          
+                            turnaround++;
+                            for(i = 1; i < FIFO.length; i++){
+                                if(!FIFO[i][4]){
+                                    if(seg >= FIFO[i][2]){
+                                        document.getElementById(FIFO[i][0]).innerHTML += '<td><i class="fas fa-square-full text-warning"></i></td>';
+                                        turnaround++;
+                                    }
+                                }else{
+                                    document.getElementById(FIFO[i][0]).innerHTML += '<td><i class="fas fa-square-full text-info"></i></td>';
+                                    turnaround++;
+                                }
+                            }
+                        } else {
+                            FIFO.shift();
+                            processos--;
+                            document.getElementById('processo').innerHTML = '<span class="" href="#">PROCESSOS<br>' + processos + '</span>';
+                            if(FIFO.length > 0){
+                                contador = 0;
+                            } else {
+                                turnaround = turnaround/qtdprocessos;
+                                alert(turnaround);
+                                document.getElementById('circulo').style.display = 'none';
+                            }
+
+                        }
+                    } else {
+                        remove('fila-prontos', memo[indice][1]);
+                        document.getElementById('fila-espera').innerHTML += '<td id="espera-' + memo[indice][1] + '" width="10%" style="background-color:' + memo[indice][0] + ';"></td>';
+                        let p = FIFO.shift();
+                        if(document.getElementById('paginacao').value == 'mrup'){
+                            mru(p);
+                        }
+                        else{
+                            fifoPag(p);
+                        }
+                    }
+                } else {
+                    contador = 0;
+                    if(bloqueados.length == FIFO.length){
+                        for(i = 0; i < bloqueados.length; i++){
+                            document.getElementById(FIFO[i][0]).innerHTML += '<td><i class="fas fa-square-full text-info"></i></td>';
+                            turnaround++;
+                        }
+                    } else {
+                        let p = FIFO.shift();
+                        FIFO.push(p);
+                        bloqueados.push(p);
+                    }
+                }
+            } else {
+                alert("Não há mais processos para serem escalonados!");
+            }
+        }
+
+        /* FIM DOS ALGORITMOS DE ESCALONAMENTO DE PROCESSOS */
+
+        function tempo() {
+            seg++; 
+
+            let memoLivre = ((50-(quadroPagina-1))/numeroPaginasTotal)*100;
+
+            document.getElementById('tempo').innerHTML = '<span class="" href="#">TEMPO<br>' + seg + '</span>';
+            document.getElementById('processo').innerHTML = '<span class="" href="#">PROCESSOS<br>' + processos + '</span>';    
+            document.getElementById('memolivre').innerHTML = '<span class="" href="#">MEMÓRIA LIVRE<br>' + memoLivre + '%</span>';     
+
+            if(document.getElementById('escalonamento').value == 'fifo') {
+                if(FIFO[0][2] <= seg){
+                    fifo();
+               }
+            }     
+
+            start = setTimeout(tempo, 1000);
+        }
+       
+        function desabilitar() {
+            if(document.getElementById('escalonamento').value  == 'fifo' || document.getElementById('escalonamento').value  == 'sjf'){
+                document.getElementById('quantum').disabled = true;
+                document.getElementById('sobrecarga').disabled = true;
+            } else {
+                document.getElementById('quantum').disabled = false;
+                document.getElementById('sobrecarga').disabled = false;
+            }
+        }
+
+        function random() {
+           seed /= 1125899839733759;  // um número primo
+           seed *= 18014398241046527; // outro
+           seed -= parseInt(seed);         // normalizar
+           return seed;
+        }
+
+        function aleatorio(inferior,superior){  
+           let numPossibilidades = superior - inferior;
+           let aleat = random() * numPossibilidades;
+           aleat = Math.floor(aleat);
+           return parseInt(inferior) + aleat;
+        } 
+
+        function dar_cor_aleatoria(){
+           let hexadecimal = new Array("0","1","2","3","4","5","6","7","8","9","A","B","C","D","E","F");
+           let cor_aleatoria = "#";
+           for (i = 0; i < 6; i++){
+              let posarray = aleatorio(0,hexadecimal.length);
+              cor_aleatoria += hexadecimal[posarray];
+           }
+           return cor_aleatoria;
+        }
+
+        function selecionar_processo(linha) {
+            $(linha).toggleClass('colorir');
+
+            processosSelecionados.push(linha);
+
+            document.getElementById('suspender').disabled = false;
+            document.getElementById('prosseguir').disabled = false;
+            document.getElementById('finalizar').disabled = false;
+            document.getElementById('prioridade').disabled = false;
+        }
+
+        function criar_processo() {
+            let quadrados = '';
+            let cor = dar_cor_aleatoria();
+
+            PID++;
+
+            document.getElementById('tabela-processos').innerHTML += '<tr onclick="selecionar_processo(this)"><td style="background-color:' + cor + ';"></td><td>' + PID + '</td><td>' + document.getElementById("tempo-chegada").value + '</td><td>' + document.getElementById("tempo-execucao").value + '</td><td>' + temporestante + '</td><td>' + document.getElementById("deadline").value + '</td><td>' + document.getElementById("PRIO").value + '</td></tr>';
+
+            document.getElementById('disco').innerHTML += '<tr><td width="10%" style="border: 0px">P' + PID + '</td><td id="' + PID + '-1"></td><td id="' + PID + '-2"></td><td id="' + PID + '-3"></td><td id="' + PID + '-4"></td><td id="' + PID + '-5"></td><td id="' + PID + '-6"></td><td id="' + PID + '-7"></td></tr>';
+
+            if (processos >= 1){
+                for (i = 1; i <=7 ; i++){
+                    document.getElementById('linha-' + String(i)).innerHTML += '<td id = "tp-' + PID + '-' + i + '">-</td>';
+                }
+                document.getElementById('linha-0').innerHTML += '<td id = "tp-' + PID + '-0" style="background-color:' + cor + ';"></td>';
+            } else {
+                document.getElementById('tabela-paginas').innerHTML += '<tr id="linha-0"><td id="tp-' + PID + '-0" style="background-color: ' + cor + ';"></td></tr><tr id="linha-1"><td id = "tp-' + PID + '-1">-</td></tr><tr id="linha-2"><td id = "tp-' + PID + '-2">-</td></tr><tr id="linha-3"><td id = "tp-' + PID + '-3">-</td></tr><tr id="linha-4"><td id = "tp-' + PID + '-4">-</td></tr><tr id="linha-5"><td id = "tp-' + PID + '-5">-</td></tr><tr id="linha-6"><td id = "tp-' + PID + '-6">-</td></tr><tr id="linha-7"><td id = "tp-' + PID + '-7">-</td></tr>';
+            }
+
+            processos++;
+            qtdprocessos++;
+
+            for(i = 0; i < 7; i++){
+                posicaoPaginas[i] = -1;
+            }
+
+            FIFO.push([cor, PID, parseInt(document.getElementById('tempo-chegada').value), parseInt(document.getElementById('tempo-execucao').value), suspenso, executandoProcesso]);
+            RR.push([cor, PID, parseInt(document.getElementById('tempo-chegada').value), parseInt(document.getElementById('tempo-execucao').value), suspenso, executandoProcesso]);
+            EDF.push([cor, PID, parseInt(document.getElementById('tempo-chegada').value), parseInt(document.getElementById('tempo-execucao').value), suspenso, executandoProcesso,  parseInt(document.getElementById('deadline').value)]);            
+            SJF.push([cor, PID, parseInt(document.getElementById('tempo-chegada').value), parseInt(document.getElementById('tempo-execucao').value), suspenso, executandoProcesso]);  
+            PRIORIDADE.push([cor, PID, parseInt(document.getElementById('tempo-chegada').value), parseInt(document.getElementById('tempo-execucao').value), suspenso, executandoProcesso, parseInt(document.getElementById('PRIO').value)]);  
+            memo.push([cor, PID, parseInt(document.getElementById('tempo-chegada').value), parseInt(document.getElementById('tempo-execucao').value), posicaoPaginas]);
+
+            FIFO.sort(function(a, b) {
+                return a[2]-b[2];
+            });
+
+            RR.sort(function(a, b) {
+                return a[2]-b[2];
+            });
+            EDF.sort(function(a, b){
+                if(a[2] == b[2]){
+                    let x = a[6];
+                    let y = b[6];
+                    return x < y ? -1 : x > y ? 1 : 0;
+                }
+                return a[2] - b[2];
+            });
+
+            SJF.sort(function(a, b){
+                if (a[2] == b[2]){
+                    if (a[3]<b[3]){
+                        return -1;
+                    } 
+                    return 0;
+                }
+                return a[2]-b[2];
+            });
+
+            PRIORIDADE.sort(function(a,b){
+                return a[6]-b[6];
+            });
+
+            memo.sort(function(a, b) {
+                return a[2]-b[2];
+            });
+        }
+
+        function run() {
+
+            executando = true;
+            contador = 0;
+
+            document.getElementById('parar').disabled = false; 
+            document.getElementById('comecar').disabled = true; 
+            document.getElementById('pausar').disabled = false; 
+
+            if(document.getElementById('escalonamento').value == 'fifo') {
+                if(FIFO.length != 0){
+                    if(!pausado){
+                        for(i=0; i < FIFO.length; i++){
+                            quadrados = '';
+                            for(j = 0; j < FIFO[i][2]; j++){
+                                quadrados += '<td><i class="fas fa-square-full text-white"></i></td>';
+                            }
+
+                            document.getElementById('grafico-gantt').innerHTML += '<tr id="' + FIFO[i][0] + '"><td style="color: ' + FIFO[i][0] + ';">P' + FIFO[i][1] + '</td>' + quadrados +  '</tr>';
+                                
+                            if(!FIFO[i][4]){
+                                document.getElementById('fila-prontos').innerHTML += '<td id="' + FIFO[i][1]+ '" width="10%" style="background-color:' + FIFO[i][0] + ';"></td>';
+                            }
+                        }
+                    }
+                }
+            } else if(document.getElementById('escalonamento').value == 'rr') {
+                if(RR.length != 0){
+                    if(!pausado){
+                        for(i=0; i < RR.length; i++){
+                            quadrados = '';
+                            for(j = 0; j < RR[i][2]; j++){
+                                quadrados += '<i class="fas fa-square-full text-white"></i>';
+                            }
+
+                            document.getElementById('grafico-gantt').innerHTML += '<tr id="' + RR[i][0] + '"><td style="color:' + RR[i][0] + ';">P' + RR[i][1] + '</td>' + quadrados +  '</tr>';
+
+                            if(!RR[i][4]){
+                                document.getElementById('fila-prontos').innerHTML += '<td id="' + RR[i][1]+ '" width="10%" style="background-color:' + RR[i][0] + ';"></td>';
+                            }
+                        }
+                    }
+                }
+            } else if(document.getElementById('escalonamento').value == 'edf'){
+                if(EDF.length != 0){
+                    if(!pausado){
+                        for(i=0; i< EDF.length; i++){
+                            quadrados = '';
+                            for(j=0; j< EDF[i][2]; j++){
+                                quadrados += '<i class="fas fa-square-full text-white"></i>';
+                            }
+                           document.getElementById('grafico-gantt').innerHTML += '<tr id="' + EDF[i][0] + '"><td style="color:' + EDF[i][0] + ';">P' + EDF[i][1] + '</td>' + quadrados +  '</tr>';
+
+                            if(!EDF[i][4]){
+                                document.getElementById('fila-prontos').innerHTML += '<td id="' + EDF[i][1]+ '" width="10%" style="background-color:' + EDF[i][0] + ';"></td>';
+                            }                        
+                        }
+                    }
+                }
+            } else if (document.getElementById('escalonamento').value == 'sjf'){
+                if(SJF.length != 0){
+                    if(!pausado){
+                        for(i=0; i< SJF.length; i++){
+                            quadrados = '';
+                            for(j=0; j< SJF[i][2]; j++){
+                                quadrados += '<i class="fas fa-square-full text-white"></i>';
+                            }
+                           document.getElementById('grafico-gantt').innerHTML += '<tr id="' + SJF[i][0] + '"><td style="color:' + SJF[i][0] + ';">P' + SJF[i][1] + '</td>' + quadrados +  '</tr>';
+
+                            if(!SJF[i][4]){
+                                document.getElementById('fila-prontos').innerHTML += '<td id="' + SJF[i][1]+ '" width="10%" style="background-color:' + SJF[i][0] + ';"></td>';
+                            }                        
+                        }
+                    }
+                }
+            } else {
+                if(PRIORIDADE.length != 0){
+                    if(!pausado){
+                        for(i=0; i< PRIORIDADE.length; i++){
+                            quadrados = '';
+                            for(j=0; j< PRIORIDADE[i][2]; j++){
+                                quadrados += '<i class="fas fa-square-full text-white"></i>';
+                            }
+                           document.getElementById('grafico-gantt').innerHTML += '<tr id="' + PRIORIDADE[i][0] + '"><td style="color:' + PRIORIDADE[i][0] + ';">P' + PRIORIDADE[i][1] + '</td>' + quadrados +  '</tr>';
+
+                            if(!PRIORIDADE[i][4]){
+                                document.getElementById('fila-prontos').innerHTML += '<td id="' + PRIORIDADE[i][1]+ '" width="10%" style="background-color:' + PRIORIDADE[i][0] + ';"></td>';
+                            }                        
+                        }
+                    }
+                }
+            }
+            pausado = false;
+            tempo();
+        }
+
+        function sidebar() {
+            if(document.getElementById("mySidenav").style.width == "21em"){
+                document.getElementById("mySidenav").style.width = "0";
+            } else {
+                document.getElementById("mySidenav").style.width = "21em";
+            }
+        }
+
+         /* Ação do botão de pausar */
+        function pause() {
+            clearTimeout(start);
+
+            pausado = true;
+
+            document.getElementById('parar').disabled = false; 
+            document.getElementById('comecar').disabled = false; 
+            document.getElementById('pausar').disabled = true; 
+
+            if(document.getElementById('escalonamento').value == 'fifo'){
+                FIFO[0][3] = FIFO[0][3] - seg;
+            } else if(document.getElementById('escalonamento').value == 'rr'){
+                RR[0][3] = RR[0][3] - seg;
+            } else if(document.getElementById('escalonamento').value == 'edf'){
+                EDJ[0][3] = EDJ[0][3] - seg;
+            } else if(document.getElementById('escalonamento').value == 'sjf'){
+                SJF[0][3] = SJF[0][3] - seg;
+            } else {
+                 PRIORIDADE[0][3] = PRIORIDADE[0][3] - seg;
+            }
+        }
+
+        /* Ação do botão de parar */
+        function stop() {
+            clearTimeout(start);
+
+            seg = 0;
+            processos = 0;
+
+            document.getElementById('tempo').innerHTML = '<span class="" href="#">TEMPO<br>' + seg + '</span>';
+            document.getElementById('grafico-gantt').innerHTML = '';
+            document.getElementById('circulo').style.display = 'none';
+            document.getElementById('fila-prontos').innerHTML = '';
+            document.getElementById('fila-espera').innerHTML = '';
+            document.getElementById('fila-suspensos').innerHTML = '';
+            document.getElementById('processo').innerHTML = '<span class="" href="#">PROCESSOS<br>' + processos + '</span>';
+            document.getElementById('memolivre').innerHTML = '<span class="" href="#">MEMÓRIA LIVRE<br>100%</span>';
+
+            document.getElementById('parar').disabled = true; 
+            document.getElementById('comecar').disabled = false; 
+            document.getElementById('pausar').disabled = true; 
+
+            for(i = 1; i <= 50; i++){
+                document.getElementById('m' + String(i)).style.backgroundColor = '';
+            }
+
+        }
+
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+
+</body>
+
+   
