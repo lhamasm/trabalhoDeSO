@@ -30,9 +30,9 @@
                     <button id="parar" class="btn btn-danger" type="button" onclick="stop()" disabled><i class="fas fa-stop"></i></i></button>
                 </form>
                 <ul class="navbar-nav p-1" style="color: #C0C0C0; font-size: 0.85em;">
-                    <li id="tempo" class="nav-item ml-5 text-center"><span class="" href="#">TEMPO<br>0</span></li>
-                    <li id="processo" class="nav-item ml-5 text-center"><span class="" href="#">PROCESSOS<br>0</span></li>
-                    <li id="memolivre" class="nav-item ml-5 text-center"><span class="" href="#">MEMÓRIA LIVRE<br>100%</span></li>
+                    <li id="tempo" class="nav-item ml-5 text-center"><span class="">TEMPO<br>0</span></li>
+                    <li id="processo" class="nav-item ml-5 text-center"><span class="">PROCESSOS<br>0</span></li>
+                    <li id="memolivre" class="nav-item ml-5 text-center"><span class="">MEMÓRIA LIVRE<br>100%</span></li>
                 </ul>
             </div>
         </nav>
@@ -387,7 +387,7 @@
             }
             let memoLivre = ((50-(cont-1))/numeroPaginasTotal)*100;
 
-            document.getElementById('tempo').innerHTML = '<span class="" href="#">TEMPO<br>' + seg + '</span>';
+            document.getElementById('tempo').innerHTML = '<span class="">TEMPO<br>' + seg + '</span>';
             document.getElementById('processo').innerHTML = '<span class="" href="#">PROCESSOS<br>' + processos + '</span>';    
             document.getElementById('memolivre').innerHTML = '<span class="" href="#">MEMÓRIA LIVRE<br>' + memoLivre + '%</span>';          
 
@@ -552,7 +552,7 @@
                     while(pag < 7){
                         if (transf < 4){
 
-                            if (document.getElementById('circulo').style.color!=memo[memoriaRam[proxPag][0]][0]){
+                            if (document.getElementById('circulo').style.color != memo[memoriaRam[proxPag][0]][0]){
 
                                 if (memo[i][4][pag]==-1){
                                     document.getElementById('tp-' + String(memo[memoriaRam[proxPag][0]][1]) + '-' + String(memoriaRam[proxPag][1]+1)).innerHTML = '-';
@@ -562,8 +562,10 @@
                                     document.getElementById(String(memo[memoriaRam[proxPag][0]][1]) + '-' + String(memoriaRam[proxPag][1]+1)).style.backgroundColor = memo[memoriaRam[proxPag][0]][0];
 
                                     memo[i][4][pag] = proxPag+1; //ta certo?
+                                    memo[memoriaRam[proxPag][0]][4][memoriaRam[proxPag][1]] = -1;
                                     memoriaRam[proxPag][0] = i;
                                     memoriaRam[proxPag][1] = pag;
+
 
                                     transf++;
                                     pag++;
@@ -596,10 +598,39 @@
                 remove('fila-espera', 'espera-'+String(proc[1]));
                 espera.shift();
                 document.getElementById('fila-prontos').innerHTML += '<td id="' + proc[1] + '" width="10%" style="background-color: ' + proc[0] + ';"></td>'; //mudar ID
-                FIFO.push(proc);
-                contador = 0;
+                
+                if(document.getElementById('escalonamento').value == 'fifo'){
+                    FIFO.push(proc);
+                    contador = 0;
+                } else if(document.getElementById('escalonamento').value == 'sjf'){
+                    SJF.push(proc);
+                    contador = 0;
+                } else if(document.getElementById('escalonamento').value == 'rr'){
+                    proc[2] = seg;
+                    RR.push(proc);
+                    RR.sort(function(a, b) {
+                        if(a[4] == b[4]){
+                            return a[2]-b[2];
+                        } 
+
+                        if(a[4] != b[4]){
+                            if(a[4]){
+                                return 1;
+                            } else {
+                                return -1;
+                            }
+                        }                                    
+                    });  
+                }
+                
             }
-            fifo();
+            if(document.getElementById('escalonamento').value == 'fifo'){
+                fifo()
+            } else if(document.getElementById('escalonamento').value == 'sjf'){
+                sjf();
+            } else if(document.getElementById('escalonamento').value == 'rr'){
+                rr();
+            }
         }
 
         function gerarPagAleatoria(){
@@ -716,41 +747,86 @@
         }
 
         function sjf() {
-
+            if (SJF.length==0 && espera.length > 0){
+                //alert(espera[0][1]);
+                setTimeout(sjf, 1000);
+                return;
+            }
             if(SJF.length > 0){
+                
                 if(!SJF[0][4]){
-                    SJF[0][5] = true;
-                    document.getElementById(SJF[0][1]).style.display = 'none';
-                    document.getElementById('circulo').style.display = 'block';
-                    document.getElementById('circulo').style.color = SJF[0][0];  
-                    contador++;
-                    if(contador <= SJF[0][3]){
-                        document.getElementById(SJF[0][0]).innerHTML += '<td><i class="fas fa-square-full text-success"></i></td>';
-                        turnaround++;
-                        for(i = 1; i < SJF.length; i++){
-                            if(!SJF[i][4]){
-                                if(seg >= SJF[i][2]){
-                                    document.getElementById(SJF[i][0]).innerHTML += '<td><i class="fas fa-square-full text-warning"></i></td>';
+                    let pageFault = false;
+                    let indice;
+                    for (i = 0; i<memo.length; i++){
+                        if (memo[i][1]==SJF[0][1]){
+                            indice = i;
+                            break;
+                        }
+                    }
+                    for (j = 1; j<=7; j++){
+                        if (document.getElementById('tp-' + String(memo[i][1]) + '-' + String(j)).innerHTML == '-'){
+                            pageFault = true;
+                            break;
+                        }
+                    }
+
+                    if (!pageFault){
+                        SJF[0][5] = true;
+                        document.getElementById(SJF[0][1]).style.display = 'none';
+                        document.getElementById('circulo').style.display = 'block';
+                        document.getElementById('circulo').style.color = SJF[0][0];  
+                        contador++;
+                        if(contador <= SJF[0][3]){
+                            document.getElementById(SJF[0][0]).innerHTML += '<td><i class="fas fa-square-full text-success"></i></td>';
+                            let pag = gerarPagAleatoria(); // gerar a pagina que será utilizada agora
+                            if(document.getElementById('paginacao').value == 'mrup'){ // se o algoritmo de paginaçao for mru
+                                for(j=0; j<memoriaRam.length; j++){ // procurar na memoria ram
+                                   if(memoriaRam[j][0] == indice && memoriaRam[j][1] == pag){ // a pagina do processo q foi utilizada
+                                        memoriaRam[j][2] = seg; // e atribuir a ela o contador seg 
+                                        break;
+                                    }
+                                }
+                            }       
+                            turnaround++;
+                            for(i = 1; i < SJF.length; i++){
+                                if(!SJF[i][4]){
+                                    if(seg >= SJF[i][2]){
+                                        document.getElementById(SJF[i][0]).innerHTML += '<td><i class="fas fa-square-full text-warning"></i></td>';
+                                        turnaround++;
+                                    }
+                                }else{
+                                    document.getElementById(SJF[i][0]).innerHTML += '<td><i class="fas fa-square-full text-info"></i></td>';
                                     turnaround++;
                                 }
-                            }else{
-                                document.getElementById(SJF[i][0]).innerHTML += '<td><i class="fas fa-square-full text-info"></i></td>';
+                            }
+
+                            for(i = 0; i < espera.length; i++){
+                                if(seg >= espera[i][2]){
+                                    document.getElementById(espera[i][0]).innerHTML += '<td><i class="fas fa-square-full text-warning"></i></td>';
+                                    turnaround++;
+                                }
                                 turnaround++;
                             }
-                        }
-                        pararSeTimeout = setTimeout(sjf, 1000);
-                    } else {
-                        SJF.shift();
-                        processos--;
-                        document.getElementById('processo').innerHTML = '<span class="" href="#">PROCESSOS<br>' + processos + '</span>';
-                        if(SJF.length > 0){
-                            contador = 0;
-                            setTimeout(sjf, (SJF[0][2]-seg)*1000);
+                            
+                            pararSeTimeout = setTimeout(sjf, 1000);
                         } else {
-                            turnaround = turnaround/qtdprocessos;
-                            alert(turnaround);
-                            document.getElementById('circulo').style.display = 'none';
+                            SJF.shift();
+                            processos--;
+                            document.getElementById('processo').innerHTML = '<span class="" href="#">PROCESSOS<br>' + processos + '</span>';
+                            if(SJF.length > 0){
+                                contador = 0;
+                                setTimeout(sjf, (SJF[0][2]-seg)*1000);
+                            } else if(SJF.length == 0 && espera.length == 0 && bloqueados.length == 0) {
+                                turnaround = turnaround/qtdprocessos;
+                                alert(turnaround);
+                                document.getElementById('circulo').style.display = 'none';
+                            }
                         }
+                    } else {
+                        remove('fila-prontos', memo[indice][1]);
+                        document.getElementById('fila-espera').innerHTML += '<td id="espera-' + memo[indice][1] + '" width="10%" style="background-color: ' + memo[indice][0] + ';"></td>';
+                        let p = SJF.shift();
+                        espera.push(p);
                     }
                 } else {
                     contador = 0;
@@ -759,7 +835,7 @@
                             document.getElementById(SJF[i][0]).innerHTML += '<td><i class="fas fa-square-full text-info"></i></td>';
                             turnaround++;
                         }
-                        setTimeout(SJF, 1000);
+                        setTimeout(sjf, 1000);
                     } else {
                         let p = SJF.shift();
                         SJF.push(p);
@@ -794,114 +870,166 @@
             p.removeChild(c);
         }
 
-        function rr(){
+        function rr() {
+            if (RR.length==0 && espera.length > 0){
+                setTimeout(rr, 1000);
+                return;
+            }
             if(RR.length > 0){
+                
                 if(!RR[0][4]){
-                    let terminou = false;
+                    let pageFault = false;
+                    let indice;
+                    for (i = 0; i<memo.length; i++){
+                        if (memo[i][1]==RR[0][1]){
+                            indice = i;
+                            break;
+                        }
+                    }
+                    for (j = 1; j<=7; j++){
+                        if (document.getElementById('tp-' + String(memo[indice][1]) + '-' + String(j)).innerHTML == '-'){
+                            pageFault = true;
+                            break;
+                        }
+                    }
 
-                    document.getElementById(RR[0][1]).style.display = 'none';
-                    document.getElementById('circulo').style.display = 'block';
-                    document.getElementById('circulo').style.color = RR[0][0];  
-                    contador++;
-                    if(RR[0][3] != 0 ){
-                        if(contador <= RR[0][3] && contador <= parseInt(document.getElementById('quantum').value)){
-                            document.getElementById(RR[0][0]).innerHTML += '<td><i class="fas fa-square-full text-success"></i></td>';
-                            turnaround++;
-                            for(i = 1; i < RR.length; i++){
-                                if(!RR[i][4]){
-                                    if(seg >= RR[i][2]){
-                                        document.getElementById(RR[i][0]).innerHTML += '<td><i class="fas fa-square-full text-warning"></i></td>';
+                    if (!pageFault){
+                        let terminou = false;
+
+                        document.getElementById(RR[0][1]).style.display = 'none';
+                        document.getElementById('circulo').style.display = 'block';
+                        document.getElementById('circulo').style.color = RR[0][0];  
+                        contador++;
+                        if(RR[0][3] > 0 ){
+                            
+                            if(contador <= RR[0][3] && contador <= parseInt(document.getElementById('quantum').value)){
+                                document.getElementById(RR[0][0]).innerHTML += '<td><i class="fas fa-square-full text-success"></i></td>';
+                                let pag = gerarPagAleatoria(); // gerar a pagina que será utilizada agora
+                                if(document.getElementById('paginacao').value == 'mrup'){ // se o algoritmo de paginaçao for mru
+                                    for(j=0; j<memoriaRam.length; j++){ // procurar na memoria ram
+                                       if(memoriaRam[j][0] == indice && memoriaRam[j][1] == pag){ // a pagina do processo q foi utilizada
+                                            memoriaRam[j][2] = seg; // e atribuir a ela o contador seg 
+                                            break;
+                                        }
+                                    }
+                                }  
+                                turnaround++;
+                                for(i = 1; i < RR.length; i++){
+                                    if(!RR[i][4]){
+                                        if(seg >= RR[i][2]){
+                                            document.getElementById(RR[i][0]).innerHTML += '<td><i class="fas fa-square-full text-warning"></i></td>';
+                                            turnaround++;
+                                        }
+                                    } else {
+                                        document.getElementById(RR[i][0]).innerHTML += '<td><i class="fas fa-square-full text-info"></i></td>';
                                         turnaround++;
                                     }
-                                } else {
-                                    document.getElementById(RR[i][0]).innerHTML += '<td><i class="fas fa-square-full text-info"></i></td>';
-                                    turnaround++;
                                 }
-                            }
-                            pararSeTimeout = setTimeout(rr, 1000);
-                        } else {
-                            let p = RR.shift();
-                            remove('fila-prontos', p[1]);
-                            p[3] -= parseInt(document.getElementById('quantum').value);
-                            if(p[3] > 0){
-                                p[2] = seg;
-                                RR.push(p);
-                                RR.sort(function(a, b) {
-                                    if(a[4] == b[4]){
-                                        return a[2]-b[2];
-                                    } 
 
-                                    if(a[4] != b[4]){
-                                        if(a[4]){
-                                            return 1;
-                                        } else {
-                                            return -1;
-                                        }
-                                    }                                    
-                                });
-                                document.getElementById('fila-prontos').innerHTML += '<td id="' + p[1]+ '" width="10%" style="background-color:' + p[0] + ';"></td>';
-                                document.getElementById('circulo').style.display = 'none';
+                                for(i = 0; i < espera.length; i++){
+                                    document.getElementById(espera[i][0]).innerHTML += '<td><i class="fas fa-square-full text-warning"></i></td>';
+                                }
+
+                                pararSeTimeout = setTimeout(rr, 1000);
                             } else {
-                                terminou = true;
-                            }
-                            
-                            if(RR.length > 0){
-                                contador = 0;
-                                if(terminou){
-                                    terminou = false;
-                                    pararSeTimeout = setTimeout(rr, (RR[0][2]-seg)*1000);
-                                } else {
-                                    document.getElementById(p[0]).innerHTML += '<td><i class="fas fa-square-full text-danger"></i></td>';
-                                    turnaround++;
+                                let p = RR.shift();
+                                remove('fila-prontos', p[1]);
+                                p[3] -= parseInt(document.getElementById('quantum').value);
+                                if(p[3] > 0){
+                                    p[2] = seg;
+                                    RR.push(p);
+                                    RR.sort(function(a, b) {
+                                        if(a[4] == b[4]){
+                                            return a[2]-b[2];
+                                        } 
 
-                                    for(i = 0; i < RR.length; i++){
-                                        if(!RR[i][4]){
-                                            if(RR[i][1] != p[1] && seg >= RR[i][2]){
-                                                document.getElementById(RR[i][0]).innerHTML += '<td><i class="fas fa-square-full text-warning"></i></td>';
+                                        if(a[4] != b[4]){
+                                            if(a[4]){
+                                                return 1;
+                                            } else {
+                                                return -1;
                                             }
-                                        }else {
-                                            document.getElementById(RR[i][0]).innerHTML += '<td><i class="fas fa-square-full text-info"></i></td>';
-                                        }
+                                        }                                    
+                                    });
+                                    document.getElementById('fila-prontos').innerHTML += '<td id="' + p[1]+ '" width="10%" style="background-color:' + p[0] + ';"></td>';
+                                    document.getElementById('circulo').style.display = 'none';
+                                } else {
+                                    terminou = true;
+                                }
+                                
+                                if(RR.length > 0){
+                                    contador = 0;
+                                    if(terminou){
+                                        terminou = false;
+                                        pararSeTimeout = setTimeout(rr, (RR[0][2]-seg)*1000);
+                                    } else {
+                                        document.getElementById(p[0]).innerHTML += '<td><i class="fas fa-square-full text-danger"></i></td>';
                                         turnaround++;
-                                    }                            
 
-                                    for(i = 0; i < parseInt(document.getElementById('sobrecarga').value)-1; i++){
-                                        pararSeTimeout = setTimeout(function() {
-                                            document.getElementById(p[0]).innerHTML += '<td><i class="fas fa-square-full text-danger"></i></td>';
+                                        for(i = 0; i < RR.length; i++){
+                                            if(!RR[i][4]){
+                                                if(RR[i][1] != p[1] && seg >= RR[i][2]){
+                                                    document.getElementById(RR[i][0]).innerHTML += '<td><i class="fas fa-square-full text-warning"></i></td>';
+                                                }
+                                            }else {
+                                                document.getElementById(RR[i][0]).innerHTML += '<td><i class="fas fa-square-full text-info"></i></td>';
+                                            }
                                             turnaround++;
+                                        }      
 
-                                            for(j = 0; j < RR.length; j++){
-                                                if(!RR[i][4]){
-                                                    if(RR[j][1] != p[1] && seg >= RR[j][2]){
-                                                        document.getElementById(RR[j][0]).innerHTML += '<td><i class="fas fa-square-full text-warning"></i></td>';
+                                        for(i = 0; i < espera.length; i++){
+                                            document.getElementById(espera[i][0]).innerHTML += '<td><i class="fas fa-square-full text-warning"></i></td>';
+                                        }                      
+
+                                        for(i = 0; i < parseInt(document.getElementById('sobrecarga').value)-1; i++){
+                                            pararSeTimeout = setTimeout(function() {
+                                                document.getElementById(p[0]).innerHTML += '<td><i class="fas fa-square-full text-danger"></i></td>';
+                                                turnaround++;
+
+                                                for(j = 0; j < RR.length; j++){
+                                                    if(!RR[i][4]){
+                                                        if(RR[j][1] != p[1] && seg >= RR[j][2]){
+                                                            document.getElementById(RR[j][0]).innerHTML += '<td><i class="fas fa-square-full text-warning"></i></td>';
+                                                            
+                                                        }
+                                                    }else {
+                                                        document.getElementById(RR[j][0]).innerHTML += '<td><i class="fas fa-square-full text-info"></i></td>';
                                                         
                                                     }
-                                                }else {
-                                                    document.getElementById(RR[j][0]).innerHTML += '<td><i class="fas fa-square-full text-info"></i></td>';
-                                                    
+                                                    turnaround++;
                                                 }
-                                                turnaround++;
-                                            }
-                                            
-                                        }, 1000 + 1000*i);
-                                    }
-                                    
-                                    setTimeout(rr, parseInt(document.getElementById('sobrecarga').value) * 1000);
-                                }
-                            } else {
-                                turnaround = turnaround/qtdprocessos;
-                                alert(turnaround);
-                                document.getElementById('circulo').style.display = 'none';
-                                processos--;
-                                document.getElementById('processo').innerHTML = '<span class="" href="#">PROCESSOS<br>' + processos + '</span>';
-                            }
-                        }
 
+                                                for(j = 0; j < espera.length; j++){
+                                                    document.getElementById(espera[j][0]).innerHTML += '<td><i class="fas fa-square-full text-warning"></i></td>';
+                                                }
+                                                
+                                            }, 1000 + 1000*i);
+                                        }
+                                        
+                                        setTimeout(rr, parseInt(document.getElementById('sobrecarga').value) * 1000);
+                                    }
+                                } else if(RR.length == 0 && espera.length == 0 && bloqueados.length == 0){
+                                    turnaround = turnaround/qtdprocessos;
+                                    alert(turnaround);
+                                    document.getElementById('circulo').style.display = 'none';
+                                    processos--;
+                                    document.getElementById('processo').innerHTML = '<span class="" href="#">PROCESSOS<br>' + processos + '</span>';
+                                }
+                            }
+
+                        } else {
+                            document.getElementById('circulo').style.display = 'none';
+                            processos--;
+                            document.getElementById('processo').innerHTML = '<span class="" href="#">PROCESSOS<br>' + processos + '</span>';
+                            document.getElementById('memolivre').innerHTML = '<span class="" href="#">MEMÓRIA LIVRE<br>100%</span>';
+                        }
                     } else {
-                        document.getElementById('circulo').style.display = 'none';
-                        processos--;
-                        document.getElementById('processo').innerHTML = '<span class="" href="#">PROCESSOS<br>' + processos + '</span>';
-                        document.getElementById('memolivre').innerHTML = '<span class="" href="#">MEMÓRIA LIVRE<br>100%</span>';
+                        remove('fila-prontos', memo[indice][1]);
+                        document.getElementById('fila-espera').innerHTML += '<td id="espera-' + memo[indice][1] + '" width="10%" style="background-color: ' + memo[indice][0] + ';"></td>';
+                        let p = RR.shift();
+                        p[3] -= contador;
+                        espera.push(p);
+                        contador = 0;
                     }
                 } else {
                     contador = 0;
@@ -944,7 +1072,7 @@
                         rr();
                     }
                 }
-            }
+            } 
         }
 
 
@@ -1369,7 +1497,7 @@
                         for(i=0; i < RR.length; i++){
                             quadrados = '';
                             for(j = 0; j < RR[i][2]; j++){
-                                quadrados += '<i class="fas fa-square-full text-white"></i>';
+                                quadrados += '<td><i class="fas fa-square-full text-white"></i></td>';
                             }
 
                             document.getElementById('grafico-gantt').innerHTML += '<tr id="' + RR[i][0] + '"><td style="color:' + RR[i][0] + ';">P' + RR[i][1] + '</td>' + quadrados +  '</tr>';
@@ -1404,7 +1532,7 @@
                         for(i=0; i< SJF.length; i++){
                             quadrados = '';
                             for(j=0; j< SJF[i][2]; j++){
-                                quadrados += '<i class="fas fa-square-full text-white"></i>';
+                                quadrados += '<td><i class="fas fa-square-full text-white"></i></td>';
                             }
                            document.getElementById('grafico-gantt').innerHTML += '<tr id="' + SJF[i][0] + '"><td style="color:' + SJF[i][0] + ';">P' + SJF[i][1] + '</td>' + quadrados +  '</tr>';
 
