@@ -350,12 +350,12 @@
         let memoriaRam = [];
         let trasnf = 0;
         let proxPag = 0;
+        let espera = [];
 
-        let quadroPagina = 1;
+        let cont = 1;
         let numeroPaginasTotal = 50;
         let numeroPaginas = 7;
-        let posicaoPaginas = [7];
-
+       
         let seg = -1;
         let processos = 0;
         let seed = 0.753;
@@ -378,18 +378,18 @@
         function alocacaoMemoria(){
             for(i = 0; i < memo.length; i++){
                 if(seg == memo[i][2]){
-                    if(numeroPaginasTotal-quadroPagina+1 > 0){
+                    if(numeroPaginasTotal-cont+1 > 0){
                         for(j = 0; j < numeroPaginas; j++){
-                            if(numeroPaginasTotal-quadroPagina+1 > 0){
-                                document.getElementById('m' + String(quadroPagina)).style.backgroundColor = memo[i][0];
-                                memoriaRam[quadroPagina-1][0] = i;
-                                memoriaRam[quadroPagina-1][1] = j;
-                                memo[i][4][j] = quadroPagina;
-                                document.getElementById('tp-' + memo[i][1] + '-' + String(j+1)).innerHTML = quadroPagina; 
-                                quadroPagina++;
+                            if(numeroPaginasTotal-cont+1 > 0){
+                                document.getElementById('m' + String(cont)).style.backgroundColor = memo[i][0];
+                                memoriaRam[cont-1][0] = i;
+                                memoriaRam[cont-1][1] = j;
+                                memo[i][4][j] = cont;
+                                document.getElementById('tp-' + memo[i][1] + '-' + String(j+1)).innerHTML = cont; 
+                                cont++;
                             } else {
-                                for(k = 1; k <= numeroPaginas-j; k++){
-                                    document.getElementById(String(memo[i][1]) + '-' + String(k)).style.backgroundColor = memo[i][0];
+                                for(k = j; k <= numeroPaginas-j; k++){
+                                    document.getElementById(String(memo[i][1]) + '-' + String(k+1)).style.backgroundColor = memo[i][0];
                                 }
                                 break;
                             }
@@ -460,27 +460,42 @@
             }            
         }
 
-        function fifoPag(proc){
+        
+        function fifoPag(){
+            if(espera.length == 0){
+                return;
+            }
             let temPag = false;
+            let proc = espera[0];
             for (i = 0; i<memo.length; i++){
                 if (proc[1]==memo[i][1]){
                     transf = 0;
-                    let pag = 0;
+                    let pag;
+                    for(pag = 0; pag<7; pag++){
+                        if(memo[i][4][pag] == -1){
+                            break;
+                        }
+                    }
                     while(pag < 7){
                         if (transf < 4){
-                            if (document.getElementById('circulo').style.backgroundColor!=memoriaRam[proxPag][0][0]){
-                                if (memo[i][4][pag]==0){
-                                    document.getElementById('tp-' + String(memo[memoriaRam[proxPag][0]][1]) + '-' + String(memoriaRam[proxPag][1])).innerHTML = '-';
-                                    document.getElementById('tp-' + String(proc[1]) + '-' + String(pag)).innerHTML = proxPag+1;
-                                    document.getElementById(String(proc[1]) + '-' + String(pag)).style.backgroundColor = rgba(200, 200, 200);
-                                    document.getElementById(String(proxPag+1)).style.backgroundColor = proc[0];
-                                    
-                                    memo[i][4][pag] = proxPag; //ta certo?
+                            
+
+                            if (document.getElementById('circulo').style.color!=memo[memoriaRam[proxPag][0]][0]){
+
+                                if (memo[i][4][pag]==-1){
+                                    document.getElementById('tp-' + String(memo[memoriaRam[proxPag][0]][1]) + '-' + String(memoriaRam[proxPag][1]+1)).innerHTML = '-';
+                                    document.getElementById('tp-' + String(proc[1]) + '-' + String(pag+1)).innerHTML = proxPag+1;
+                                    document.getElementById(String(proc[1]) + '-' + String(pag+1)).style.backgroundColor = '';
+                                    document.getElementById('m' + String(proxPag+1)).style.backgroundColor = proc[0];
+                                    document.getElementById(String(memo[memoriaRam[proxPag][0]][1]) + '-' + String(memoriaRam[proxPag][1]+1)).style.backgroundColor = memo[memoriaRam[proxPag][0]][0];
+
+                                    memo[i][4][pag] = proxPag+1; //ta certo?
                                     memoriaRam[proxPag][0] = i;
                                     memoriaRam[proxPag][1] = pag;
 
                                     transf++;
                                     pag++;
+
                                 } else {
                                     break;
                                 }
@@ -490,7 +505,7 @@
                                 proxPag = 0;
                             }
                         } else {
-                            if (pag < 6 && memo[i][4][pag+1]==0){
+                            if (memo[i][4][pag]==-1){
                                 temPag = true;
                             }
                             break;
@@ -500,12 +515,17 @@
                 }
             }
             if (temPag){
-                setTimeout(fifoPag(proc), 1000);
+                for(i=0; i<espera.length; i++){
+                    turnaround++;
+                }
+                // setTimeout(fifoPag, 1000);
             } else {
                 remove('fila-espera', 'espera-'+String(proc[1]));
-                document.getElementById('fila-prontos').innerHTML += '<td id="' + proc[1]+ '" width="10%" style="background-color:' + proc[0] + ';"></td>'; //mudar ID
+                espera.shift();
+                document.getElementById('fila-prontos').innerHTML += '<td id="' + proc[1]+ '" width="10%" style="background-color: ' + proc[0] + ';"></td>'; //mudar ID
                 FIFO.push(proc);
             }
+            fifo();
         }
 
         /* FIM DOS ALGORITMOS DE PAGINAÇÃO */
@@ -524,8 +544,8 @@
 
         /* ALGORITMOS DE ESCALONAMENTO DE PROCESSOS */
 
-        function fifo() {
-            if(FIFO.length > 0){
+       function fifo() {
+            if(FIFO.length > 0 || espera.length > 0){
                 if(!FIFO[0][4]){
                     let pageFault = false;
                     let indice;
@@ -571,13 +591,15 @@
                                     turnaround++;
                                 }
                             }
+                            //pararSeTimeout = setTimeout(fifo, 1000);
                         } else {
                             FIFO.shift();
                             processos--;
                             document.getElementById('processo').innerHTML = '<span class="" href="#">PROCESSOS<br>' + processos + '</span>';
                             if(FIFO.length > 0){
                                 contador = 0;
-                            } else {
+                                //setTimeout(fifo, (FIFO[0][2]-seg)*1000);
+                            } else if(FIFO.length == 0 && espera.length == 0 && bloqueados.length == 0){
                                 turnaround = turnaround/qtdprocessos;
                                 alert(turnaround);
                                 document.getElementById('circulo').style.display = 'none';
@@ -586,14 +608,16 @@
                         }
                     } else {
                         remove('fila-prontos', memo[indice][1]);
-                        document.getElementById('fila-espera').innerHTML += '<td id="espera-' + memo[indice][1] + '" width="10%" style="background-color:' + memo[indice][0] + ';"></td>';
+                        document.getElementById('fila-espera').innerHTML += '<td id="espera-' + memo[indice][1] + '" width="10%" style="background-color: ' + memo[indice][0] + ';"></td>';
                         let p = FIFO.shift();
-                        if(document.getElementById('paginacao').value == 'mrup'){
-                            mru(p);
+                        espera.push(p);
+                      /*  if(document.getElementById('paginacao').value == 'mrup'){
+                            mru();
                         }
                         else{
-                            fifoPag(p);
-                        }
+                            fifoPag(); 
+                        } */
+                        // fifo();
                     }
                 } else {
                     contador = 0;
@@ -602,15 +626,15 @@
                             document.getElementById(FIFO[i][0]).innerHTML += '<td><i class="fas fa-square-full text-info"></i></td>';
                             turnaround++;
                         }
+                        //setTimeout(fifo, 1000);
                     } else {
                         let p = FIFO.shift();
                         FIFO.push(p);
                         bloqueados.push(p);
+                        //fifo();
                     }
                 }
-            } else {
-                alert("Não há mais processos para serem escalonados!");
-            }
+            } 
         }
 
         /* FIM DOS ALGORITMOS DE ESCALONAMENTO DE PROCESSOS */
@@ -618,17 +642,24 @@
         function tempo() {
             seg++; 
 
-            let memoLivre = ((50-(quadroPagina-1))/numeroPaginasTotal)*100;
+            let memoLivre = ((50-(cont-1))/numeroPaginasTotal)*100;
 
             document.getElementById('tempo').innerHTML = '<span class="" href="#">TEMPO<br>' + seg + '</span>';
             document.getElementById('processo').innerHTML = '<span class="" href="#">PROCESSOS<br>' + processos + '</span>';    
             document.getElementById('memolivre').innerHTML = '<span class="" href="#">MEMÓRIA LIVRE<br>' + memoLivre + '%</span>';     
+     
 
+            if(document.getElementById('paginacao').value == 'mrup'){
+                mru();
+            }
+            else{
+                fifoPag(); 
+            }
             if(document.getElementById('escalonamento').value == 'fifo') {
-                if(FIFO[0][2] <= seg){
+                if(FIFO.length > 0){
                     fifo();
                }
-            }     
+            }
 
             start = setTimeout(tempo, 1000);
         }
@@ -700,8 +731,9 @@
             processos++;
             qtdprocessos++;
 
-            for(i = 0; i < 7; i++){
-                posicaoPaginas[i] = -1;
+             let posicaoPaginas = [];
+            for(i=0; i<7; i++){
+                posicaoPaginas.push(-1);
             }
 
             FIFO.push([cor, PID, parseInt(document.getElementById('tempo-chegada').value), parseInt(document.getElementById('tempo-execucao').value), suspenso, executandoProcesso]);

@@ -535,6 +535,7 @@
 
         function fifoPag(){
             if(espera.length == 0){
+                //fifo();
                 return;
             }
             let temPag = false;
@@ -587,6 +588,7 @@
             }
             if (temPag){
                 for(i=0; i<espera.length; i++){
+                    document.getElementById(espera[i][0]).innerHTML += '<td><i class="fas fa-square-full text-warning"></i></td>';
                     turnaround++;
                 }
                 // setTimeout(fifoPag, 1000);
@@ -605,6 +607,11 @@
         }
 
         function fifo() {
+            if (FIFO.length==0 && espera.length > 0){
+                //alert(espera[0][1]);
+                setTimeout(fifo, 1000);
+                return;
+            }
             if(FIFO.length > 0){
                 if(!FIFO[0][4]){
                     let pageFault = false;
