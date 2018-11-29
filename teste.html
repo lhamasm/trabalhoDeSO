@@ -337,12 +337,12 @@
     </div> 
 
     <script type="text/javascript">
-        var PID = 0;
-        var temporestante = 0;
-        var FIFO = [];
-        var RR = [];
-        var memo = [];
-        var tempo;
+        let PID = 0;
+        let temporestante = 0;
+        let FIFO = [];
+        let RR = [];
+        let memo = [];
+        //let tempo;
         let seed = 0.753;
         let qtdprocessos = 0;
         let turnaround = 0;
@@ -492,9 +492,9 @@
                 if(memo[i][1] == procelso[1]){
                     for(j=0; j<memoriaRam.length; j++){
                         if(transf < 4){
-                            var indiceProcesso = memoriaRam[j][0]; // indice do processo q tem a pagina 
+                            let indiceProcesso = memoriaRam[j][0]; // indice do processo q tem a pagina 
                             if(memo[indiceProcesso][0] != document.getElementById('circulo').style.color){
-                                var indicePagina = memoriaRam[j][1]; // indice da pagina q vai ser retirada
+                                let indicePagina = memoriaRam[j][1]; // indice da pagina q vai ser retirada
                                 for(k=0; k<memo[i][4].length; k++){
                                     if(k < 6 && memo[i][4][k+1] == -1){
                                         repete = true;
@@ -587,22 +587,23 @@
                 }
             }
             if (temPag){
-                for(i=0; i<espera.length; i++){
+                                /*for(i = 0; i < espera.length; i++){
                     document.getElementById(espera[i][0]).innerHTML += '<td><i class="fas fa-square-full text-warning"></i></td>';
                     turnaround++;
-                }
+                }*/
                 // setTimeout(fifoPag, 1000);
             } else {
                 remove('fila-espera', 'espera-'+String(proc[1]));
                 espera.shift();
-                document.getElementById('fila-prontos').innerHTML += '<td id="' + proc[1]+ '" width="10%" style="background-color: ' + proc[0] + ';"></td>'; //mudar ID
+                document.getElementById('fila-prontos').innerHTML += '<td id="' + proc[1] + '" width="10%" style="background-color: ' + proc[0] + ';"></td>'; //mudar ID
                 FIFO.push(proc);
+                contador = 0;
             }
             fifo();
         }
 
         function gerarPagAleatoria(){
-            var numero = Math.floor(Math.random() * 7);
+            let numero = Math.floor(Math.random() * 7);
             return numero;
         }
 
@@ -613,6 +614,7 @@
                 return;
             }
             if(FIFO.length > 0){
+                
                 if(!FIFO[0][4]){
                     let pageFault = false;
                     let indice;
@@ -658,6 +660,14 @@
                                     turnaround++;
                                 }
                             }
+
+                            for(i = 0; i < espera.length; i++){
+                                if(seg >= espera[i][2]){
+                                    document.getElementById(espera[i][0]).innerHTML += '<td><i class="fas fa-square-full text-warning"></i></td>';
+                                    turnaround++;
+                                }
+                                turnaround++;
+                            }
                             pararSeTimeout = setTimeout(fifo, 1000);
                         } else {
                             FIFO.shift();
@@ -678,6 +688,7 @@
                         document.getElementById('fila-espera').innerHTML += '<td id="espera-' + memo[indice][1] + '" width="10%" style="background-color: ' + memo[indice][0] + ';"></td>';
                         let p = FIFO.shift();
                         espera.push(p);
+
                       /*  if(document.getElementById('paginacao').value == 'mrup'){
                             mru();
                         }
@@ -705,6 +716,7 @@
         }
 
         function sjf() {
+
             if(SJF.length > 0){
                 if(!SJF[0][4]){
                     SJF[0][5] = true;
@@ -713,7 +725,7 @@
                     document.getElementById('circulo').style.color = SJF[0][0];  
                     contador++;
                     if(contador <= SJF[0][3]){
-                        document.getElementById(SJF[0][0]).innerHTML += '<i class="fas fa-square-full text-success"></i>';
+                        document.getElementById(SJF[0][0]).innerHTML += '<td><i class="fas fa-square-full text-success"></i></td>';
                         turnaround++;
                         for(i = 1; i < SJF.length; i++){
                             if(!SJF[i][4]){
@@ -970,8 +982,8 @@
                                 EDF.push(p);
                                 EDF.sort(function(a, b){ // ordena de novo
                                     if(a[2] == b[2]){
-                                        var x = a[6];
-                                        var y = b[6];
+                                        let x = a[6];
+                                        let y = b[6];
                                         return x < y ? -1 : x > y ? 1 : 0;
                                     }
                                     return a[2] - b[2];
@@ -1053,8 +1065,8 @@
                         EDF.push(p);
                         EDF.sort(function(a, b){ // ordena de novo
                             if(a[2] == b[2]){
-                                var x = a[6];
-                                var y = b[6];
+                                let x = a[6];
+                                let y = b[6];
                                 return x < y ? -1 : x > y ? 1 : 0;
                             }
                             return a[2] - b[2];
@@ -1062,8 +1074,8 @@
                         bloqueados.push(p);
                         bloqueados.sort(function(a, b){ // ordena de novo
                             if(a[2] == b[2]){
-                                var x = a[6];
-                                var y = b[6];
+                                let x = a[6];
+                                let y = b[6];
                                 return x < y ? -1 : x > y ? 1 : 0;
                             }
                             return a[2] - b[2];
@@ -1287,8 +1299,8 @@
                 });
                 EDF.sort(function(a, b){
                     if(a[2] == b[2]){
-                        var x = a[6];
-                        var y = b[6];
+                        let x = a[6];
+                        let y = b[6];
                         return x < y ? -1 : x > y ? 1 : 0;
                     }
                     return a[2] - b[2];
@@ -1494,8 +1506,8 @@
 
                             EDF.sort(function(a, b){ // ordena de novo
                                 if(a[2] == b[2]){
-                                    var x = a[4];
-                                    var y = b[4];
+                                    let x = a[4];
+                                    let y = b[4];
                                     return x < y ? -1 : x > y ? 1 : 0;
                                 }
                                 return a[2] - b[2];
@@ -1594,8 +1606,8 @@
                             remove('fila-suspensos', id);
                             EDF.sort(function(a, b){ // ordena de novo
                                 if(a[2] == b[2]){
-                                    var x = a[4];
-                                    var y = b[4];
+                                    let x = a[4];
+                                    let y = b[4];
                                     return x < y ? -1 : x > y ? 1 : 0;
                                 }
                                 return a[2] - b[2];
