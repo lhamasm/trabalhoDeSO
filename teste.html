@@ -764,15 +764,15 @@
                 
                 if(!FIFO[0][4]){
                     let pageFault = false;
-                    if (seg>5){
-                        let indice;
-                        for (i = 0; i<memo.length; i++){
-                            if (memo[i][1]==RR[0][1]){
-                                indice = i;
-                                break;
-                            }
+                    let indice;
+                    for (i = 0; i<memo.length; i++){
+                        if (memo[i][1]==FIFO[0][1]){
+                            indice = i;
+                            break;
                         }
-                        for (j = 1; j<=7; j++){
+                    }
+                    if (seg>5){
+                        for (j = 0; j<7; j++){
                             if (document.getElementById('tp-' + String(memo[indice][1]) + '-' + String(j)).innerHTML == '-'){
                                 pageFault = true;
                                 break;
@@ -834,6 +834,7 @@
 
                         }
                     } else {
+                        console.log("pagefaul");
                         for(i = 0; i < espera.length; i++){
                             if(seg >= espera[i][2]){
                                 document.getElementById(espera[i][0]).innerHTML += '<td><i class="fas fa-square-full text-warning"></i></td>';
@@ -887,14 +888,14 @@
                 
                 if(!SJF[0][4]){
                     let pageFault = false;
-                    if (seg>5){
-                        let indice;
-                        for (i = 0; i<memo.length; i++){
-                            if (memo[i][1]==RR[0][1]){
-                                indice = i;
-                                break;
-                            }
+                    let indice;
+                    for (i = 0; i<memo.length; i++){
+                        if (memo[i][1]==SJF[0][1]){
+                            indice = i;
+                            break;
                         }
+                    }
+                    if (seg>5){
                         for (j = 1; j<=7; j++){
                             if (document.getElementById('tp-' + String(memo[indice][1]) + '-' + String(j)).innerHTML == '-'){
                                 pageFault = true;
@@ -1028,14 +1029,14 @@
                 
                 if(!RR[0][4]){
                     let pageFault = false;
-                    if (seg>5){
-                        let indice;
-                        for (i = 0; i<memo.length; i++){
-                            if (memo[i][1]==RR[0][1]){
-                                indice = i;
-                                break;
-                            }
+                    let indice;
+                    for (i = 0; i<memo.length; i++){
+                        if (memo[i][1]==RR[0][1]){
+                            indice = i;
+                            break;
                         }
+                    }
+                    if (seg>5){
                         for (j = 1; j<=7; j++){
                             if (document.getElementById('tp-' + String(memo[indice][1]) + '-' + String(j)).innerHTML == '-'){
                                 pageFault = true;
@@ -1262,14 +1263,14 @@
                 
                 if(!EDF[0][4]){
                     let pageFault = false;
-                    if (seg>5){
-                        let indice;
-                        for (i = 0; i<memo.length; i++){
-                            if (memo[i][1]==RR[0][1]){
-                                indice = i;
-                                break;
-                            }
+                    let indice;
+                    for (i = 0; i<memo.length; i++){
+                        if (memo[i][1]==EDF[0][1]){
+                            indice = i;
+                            break;
                         }
+                    }
+                    if (seg>5){
                         for (j = 1; j<=7; j++){
                             if (document.getElementById('tp-' + String(memo[indice][1]) + '-' + String(j)).innerHTML == '-'){
                                 pageFault = true;
