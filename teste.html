@@ -47,7 +47,8 @@
                     <div class="row">   
                         <div class="col-6">             
                             <label for="escalonamento">Escalonamento</label>
-                            <select class="form-control custom-select" id="escalonamento" onchange="desabilitar()" style="font-size:0.9em;">
+                            <select required class="form-control custom-select" id="escalonamento" onchange="desabilitar()" style="font-size:0.9em;">
+                                <option value="sele"> Selecione </option>
                                 <option value="fifo">FIFO</option>
                                 <option value="rr">Round Robin</option>
                                 <option value="edf">EDF</option>
@@ -57,9 +58,10 @@
                         </div>
                         <div class="col-6">
                             <label for="paginacao">Paginação</label>
-                            <select class="form-control custom-select"  id="paginacao" style="font-size:0.9em;">
-                                <option value = "fifop">FIFO</option>
-                                <option value = "mrup">MRU</option>
+                            <select required class="form-control custom-select" id="paginacao" onchange="habilitaCriar()" style="font-size:0.9em;">
+                                <option value="selp"> Selecione </option>
+                                <option value="fifop">FIFO</option>
+                                <option value="mrup">MRU</option>
                             </select>
                         </div>
                     </div>
@@ -68,18 +70,17 @@
                     <div class="col-6">
                         <div class="form-group">
                             <label for="quantum">Quantum</label>
-                            <input class="form-control" type="number" id="quantum" min="1" style="font-size:0.9em;">
+                            <input disabled required class="form-control" type="number" id="quantum" min="1" style="font-size:0.9em;">
                         </div>
                     </div>
                     <div class="col-6">
                         <div class="form-group">
                             <label for="sobrecarga">Sobrecarga</label>
-                            <input class="form-control" type="number" id="sobrecarga" min="1" max="5" style="font-size:0.9em;">
+                            <input disabled required class="form-control" type="number" id="sobrecarga" min="1" max="5" style="font-size:0.9em;">
                         </div>
                     </div>
                 </div>
             </form>
-
             <h5 class="text-center">Gerenciador de Processos</h5>
             <hr style="background-color: #C8C8C8;">
             <div class="row">
@@ -103,7 +104,7 @@
                 </span>
 
                 <div class="col-4 mt-2">
-                    <button class="btn btn-block btn-midnight" type="button" data-toggle="modal" data-target="#criar-processo" style="font-size: 0.7em;"><strong>Criar</strong></button>
+                    <button id="criarProcesso" class="btn btn-block btn-midnight" type="button" data-toggle="modal" data-target="#criar-processo" style="font-size: 0.7em;" disabled><strong>Criar</strong></button>
                     <button id="suspender" class="btn btn-block btn-midnight" type="button" style="font-size: 0.7em;" onclick="suspenderProcessos()" disabled><strong>Suspender</strong></button>
                     <button id="prosseguir" class="btn btn-block btn-midnight" type="button" style="font-size: 0.7em;" onclick="prosseguirProcessos()" disabled><strong>Prosseguir</strong></button>
                     <button id="finalizar" class="btn btn-block btn-midnight" type="button" style="font-size: 0.7em;" onclick="finalizarProcessos()" disabled><strong>Finalizar</strong></button>
@@ -1732,13 +1733,42 @@
         
         function desabilitar() {
             if(document.getElementById('escalonamento').value  == 'fifo' || document.getElementById('escalonamento').value  == 'sjf'){
-                document.getElementById('quantum').readOnly = true;
-                document.getElementById('sobrecarga').readOnly = true;
+                document.getElementById('deadline').required = "";
+                document.getElementById('PRIO').required = "";
+                document.getElementById('quantum').disabled = true;
+                document.getElementById('sobrecarga').disabled = true;
 
             } else {
-                document.getElementById('quantum').readOnly = false;
-                document.getElementById('sobrecarga').readOnly = false;
+                document.getElementById('quantum').disabled = false;
+                document.getElementById('sobrecarga').disabled = false;
+                if(document.getElementById('escalonamento').value != 'prio'){
+                    document.getElementById('PRIO').required = "";
+                }
+                else{
+                    document.getElementById('PRIO').required = "required";
+                }
+                if(document.getElementById('escalonamento').value != 'edf'){
+                    document.getElementById('deadline').required = "";
+                }
+                else{
+                    document.getElementById('deadline').required = "required";                    
+                }
             }
+            if(document.getElementById('escalonamento').value != "sele" && document.getElementById('paginacao').value != "selp"){
+                document.getElementById('criarProcesso').disabled = false;
+            }
+            else{
+                document.getElementById('criarProcesso').disabled = true;                
+            }
+        }
+
+        function habilitaCriar(){
+            if(document.getElementById('escalonamento').value != "sele" && document.getElementById('paginacao').value != "selp"){
+                document.getElementById('criarProcesso').disabled = false;
+            }
+            else{
+                document.getElementById('criarProcesso').disabled = true;                
+            }            
         }
 
         function random() {
@@ -1912,7 +1942,7 @@
                         }
                     }
                     pararSeTimeout2 = setTimeout(edf, (EDF[0][2]-1)*1000);
-                }
+                }               
             } else if (document.getElementById('escalonamento').value == 'sjf'){
                 if(SJF.length != 0){
                     if(!pausado){
