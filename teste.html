@@ -521,48 +521,54 @@
 
         function mru(){
             if(espera.length == 0){
-                //fifo();
                 return;
             }
 
             let procelso = espera[0];
             let repete = false;
-            transf = 0;
             memoriaRam.sort(function(a, b){ // ordena vetor da memoria ram
                 return a[2] - b[2];
             });
             for(i=0; i<memo.length; i++){
                 if(memo[i][1] == procelso[1]){
+                	transf = 0;
                     for(j=0; j<memoriaRam.length; j++){
-                        if(transf < 4){
+                    	let naoAcabou = false;
+                    	for(k=0; k<memo[i][4].length; k++){
+                    		if(memo[i][4][k] == -1){
+                    			naoAcabou = true;
+                    		}
+                    	}
+                        if(transf < 4 && naoAcabou){
                             let indiceProcesso = memoriaRam[j][0]; // indice do processo q tem a pagina 
                             if(memo[indiceProcesso][1] != idExecutando){
                                 let indicePagina = memoriaRam[j][1]; // indice da pagina q vai ser retirada
                                 for(k=0; k<memo[i][4].length; k++){
-                                    if(k < 6 && memo[i][4][k+1] == -1){
-                                        repete = true;
-                                    }
                                     if(memo[i][4][k] == -1){ // busca pagina q n esta na ram
+                                    	document.getElementById('tp-' + String(memo[indiceProcesso][1]) + '-' + String(indicePagina+1)).innerHTML = '-';
+                                    	document.getElementById('tp-' + String(procelso[1]) + '-' + String(k+1)).innerHTML = memo[indiceProcesso][4][indicePagina];
+                                    	document.getElementById(String(procelso[1]) + '-' + String(k+1)).style.backgroundColor = '';
+                                    	document.getElementById('m' + String(memo[indiceProcesso][4][indicePagina])).style.backgroundColor = procelso[0];
+                                    	document.getElementById(String(memo[indiceProcesso][1]) + '-' + String(indicePagina+1)).style.backgroundColor = memo[indiceProcesso][0];
                                         memo[i][4][k] = memo[indiceProcesso][4][indicePagina]; //atualiza tabela de paginas
                                         memo[indiceProcesso][4][indicePagina] = -1;
                                         memoriaRam[j][0] = i;
                                         memoriaRam[j][1] = k;
-                                        memoriaRam[j][2] = seg+1;
-                                        document.getElementById(String(memo[i][1]) + '-' + String(j+1)).style.backgroundColor = '';
-                                        document.getElementById('m' + String(memo[i][4][k])).style.backgroundColor = memo[i][0];
+                                        memoriaRam[j][2] = seg;
+                                        memoriaRam.sort(function(a, b){
+							                return a[2] - b[2];
+							            });
                                         transf++;
-                                        for(o=1; o<=7; o++){
-                                            if(document.getElementById(String(memo[indiceProcesso][1]) + '-' + String(o)).style.backgroundColor == ''){
-                                                document.getElementById(String(memo[indiceProcesso][1]) + '-' + String(o)).style.backgroundColor == memo[indiceProcesso][0];
-                                                break;
-                                            }
-                                        }
                                         break;
                                     } 
                                 }
                             }
                         } else {
-                            repete = false;
+                            for(k=0; k<memo[i][4].length; k++){
+                            	if(memo[i][4][k] == -1){
+                                    repete = true;
+                                }
+                            }
                             break;
                         }
                     }
@@ -1514,10 +1520,14 @@
         }
 
         function prio() {
+            if (PRIORIDADE.length==0 && espera.length > 0){
+                setTimeout(prio, 1000);
+                return;
+            }        	
             if(PRIORIDADE.length > 0){
+
                 if(!PRIORIDADE[0][4]){
                     let terminou = false;
-
                     document.getElementById(PRIORIDADE[0][1]).style.display = 'none';
                     document.getElementById('circulo').style.display = 'block';
                     document.getElementById('circulo').style.color = PRIORIDADE[0][0];  
