@@ -1523,104 +1523,149 @@
             if (PRIORIDADE.length==0 && espera.length > 0){
                 setTimeout(prio, 1000);
                 return;
-            }        	
+            }
             if(PRIORIDADE.length > 0){
-
+                
                 if(!PRIORIDADE[0][4]){
-                    let terminou = false;
-                    document.getElementById(PRIORIDADE[0][1]).style.display = 'none';
-                    document.getElementById('circulo').style.display = 'block';
-                    document.getElementById('circulo').style.color = PRIORIDADE[0][0];  
-                    contador++;
-                    if(PRIORIDADE[0][3] != 0 ){
-                        if(contador <= PRIORIDADE[0][3] && contador <= parseInt(document.getElementById('quantum').value)){
-                            document.getElementById(PRIORIDADE[0][0]).innerHTML += '<td><i class="fas fa-square-full text-success"></i></td>';
-                            turnaround++;
-                            for(i = 1; i < PRIORIDADE.length; i++){
-                                if(!PRIORIDADE[i][4]){
-                                    if(seg >= PRIORIDADE[i][2]){
-                                        document.getElementById(PRIORIDADE[i][0]).innerHTML += '<td><i class="fas fa-square-full text-warning"></i></td>';
-                                        turnaround++;
-                                    }
-                                } else {
-                                    document.getElementById(PRIORIDADE[i][0]).innerHTML += '<td><i class="fas fa-square-full text-info"></i></td>';
-                                    turnaround++;
-                                }
+                    let pageFault = false;
+                    let indice;
+                    for (i = 0; i<memo.length; i++){
+                        if (memo[i][1]==PRIORIDADE[0][1]){
+                            indice = i;
+                            break;
+                        }
+                    }
+                    if (seg>5){
+                        for (j = 1; j<=7; j++){
+                            if (document.getElementById('tp-' + String(memo[indice][1]) + '-' + String(j)).innerHTML == '-'){
+                                pageFault = true;
+                                break;
                             }
-                            pararSeTimeout = setTimeout(prio, 1000);
-                        } else {
-                            let p = PRIORIDADE.shift();
-                            remove('fila-prontos', p[1]);
-                            p[3] -= parseInt(document.getElementById('quantum').value);
-                            if(p[3] > 0){
-                                p[2] = seg;
-                                PRIORIDADE.push(p);
-                                PRIORIDADE.sort(function(a, b) {
-                                    return a[6]-b[6];                                   
-                                });
-                                document.getElementById('fila-prontos').innerHTML += '<td id="' + p[1]+ '" width="10%" style="background-color:' + p[0] + ';"></td>';
-                                document.getElementById('circulo').style.display = 'none';
-                            } else {
-                                terminou = true;
-                            }
-                            
-                            if(PRIORIDADE.length > 0){
-                                contador = 0;
-                                if(terminou){
-                                    terminou = false;
-                                    pararSeTimeout = setTimeout(prio, (PRIORIDADE[0][2]-seg)*1000);
-                                } else {
-                                    document.getElementById(p[0]).innerHTML += '<td><i class="fas fa-square-full text-danger"></i></td>';
-                                    turnaround++;
-
-                                    for(i = 0; i < PRIORIDADE.length; i++){
-                                        if(!PRIORIDADE[i][4]){
-                                            if(PRIORIDADE[i][1] != p[1] && seg >= PRIORIDADE[i][2]){
-                                                document.getElementById(PRIORIDADE[i][0]).innerHTML += '<td><i class="fas fa-square-full text-warning"></i></td>';
-                                                turnaround++;
-                                            }
-                                        }else {
-                                            document.getElementById(PRIORIDADE[i][0]).innerHTML += '<td><i class="fas fa-square-full text-info"></i></td>';
+                        }
+                    }
+                    if (!pageFault){
+                        let terminou = false;
+                        document.getElementById(PRIORIDADE[0][1]).style.display = 'none';
+                        document.getElementById('circulo').style.display = 'block';
+                        document.getElementById('circulo').style.color = PRIORIDADE[0][0];  
+                        contador++;
+                        if(PRIORIDADE[0][3] != 0 ){
+                            if(contador <= PRIORIDADE[0][3] && contador <= parseInt(document.getElementById('quantum').value)){
+                                document.getElementById(PRIORIDADE[0][0]).innerHTML += '<td><i class="fas fa-square-full text-success"></i></td>';
+                                turnaround++;
+                                for(i = 1; i < PRIORIDADE.length; i++){
+                                    if(!PRIORIDADE[i][4]){
+                                        if(seg >= PRIORIDADE[i][2]){
+                                            document.getElementById(PRIORIDADE[i][0]).innerHTML += '<td><i class="fas fa-square-full text-warning"></i></td>';
                                             turnaround++;
                                         }
-                                    }                            
+                                    } else {
+                                        document.getElementById(PRIORIDADE[i][0]).innerHTML += '<td><i class="fas fa-square-full text-info"></i></td>';
+                                        turnaround++;
+                                    }
+                                }
+                                pararSeTimeout = setTimeout(prio, 1000);
+                            } else {
+                                let p = PRIORIDADE.shift();
+                                remove('fila-prontos', p[1]);
+                                p[3] -= parseInt(document.getElementById('quantum').value);
+                                if(p[3] > 0){
+                                    p[2] = seg;
+                                    PRIORIDADE.push(p);
+                                    PRIORIDADE.sort(function(a, b) {
+                                        return a[6]-b[6];                                   
+                                    });
+                                    document.getElementById('fila-prontos').innerHTML += '<td id="' + p[1]+ '" width="10%" style="background-color:' + p[0] + ';"></td>';
+                                    document.getElementById('circulo').style.display = 'none';
+                                } else {
+                                    terminou = true;
+                                }
+                                
+                                if(PRIORIDADE.length > 0){
+                                    contador = 0;
+                                    if(terminou){
+                                        terminou = false;
+                                        pararSeTimeout = setTimeout(prio, (PRIORIDADE[0][2]-seg)*1000);
+                                    } else {
+                                        document.getElementById(p[0]).innerHTML += '<td><i class="fas fa-square-full text-danger"></i></td>';
+                                        turnaround++;
 
-                                    for(i = 0; i < parseInt(document.getElementById('sobrecarga').value)-1; i++){
-                                        pararSeTimeout = setTimeout(function() {
-                                            document.getElementById(p[0]).innerHTML += '<td><i class="fas fa-square-full text-danger"></i></td>';
-                                            turnaround++;
-
-                                            for(j = 0; j < PRIORIDADE.length; j++){
-                                                if(!PRIORIDADE[i][4]){
-                                                    if(PRIORIDADE[j][1] != p[1] && seg >= PRIORIDADE[j][2]){
-                                                        document.getElementById(PRIORIDADE[j][0]).innerHTML += '<td><i class="fas fa-square-full text-warning"></i></td>';
-                                                        turnaround++;
-                                                    }
-                                                }else {
-                                                    document.getElementById(PRIORIDADE[j][0]).innerHTML += '<td><i class="fas fa-square-full text-info"></i></td>';
+                                        for(i = 0; i < PRIORIDADE.length; i++){
+                                            if(!PRIORIDADE[i][4]){
+                                                if(PRIORIDADE[i][1] != p[1] && seg >= PRIORIDADE[i][2]){
+                                                    document.getElementById(PRIORIDADE[i][0]).innerHTML += '<td><i class="fas fa-square-full text-warning"></i></td>';
                                                     turnaround++;
                                                 }
+                                            }else {
+                                                document.getElementById(PRIORIDADE[i][0]).innerHTML += '<td><i class="fas fa-square-full text-info"></i></td>';
+                                                turnaround++;
                                             }
-                                            
-                                        }, 1000 + 1000*i);
+                                        }                            
+
+                                        for(i = 0; i < parseInt(document.getElementById('sobrecarga').value)-1; i++){
+                                            pararSeTimeout = setTimeout(function() {
+                                                document.getElementById(p[0]).innerHTML += '<td><i class="fas fa-square-full text-danger"></i></td>';
+                                                turnaround++;
+
+                                                for(j = 0; j < PRIORIDADE.length; j++){
+                                                    if(!PRIORIDADE[i][4]){
+                                                        if(PRIORIDADE[j][1] != p[1] && seg >= PRIORIDADE[j][2]){
+                                                            document.getElementById(PRIORIDADE[j][0]).innerHTML += '<td><i class="fas fa-square-full text-warning"></i></td>';
+                                                            turnaround++;
+                                                        }
+                                                    }else {
+                                                        document.getElementById(PRIORIDADE[j][0]).innerHTML += '<td><i class="fas fa-square-full text-info"></i></td>';
+                                                        turnaround++;
+                                                    }
+                                                }
+                                                
+                                            }, 1000 + 1000*i);
+                                        }
+                                        
+                                        setTimeout(prio, parseInt(document.getElementById('sobrecarga').value) * 1000);
                                     }
-                                    
-                                    setTimeout(prio, parseInt(document.getElementById('sobrecarga').value) * 1000);
+                                } else {
+                                    turnaround = turnaround/qtdprocessos;
+                                    alert(turnaround);
+                                    document.getElementById('circulo').style.display = 'none';
+                                    processos--;
+                                    document.getElementById('processo').innerHTML = '<span class="" href="#">PROCESSOS<br>' + processos + '</span>';
                                 }
-                            } else {
-                                turnaround = turnaround/qtdprocessos;
-                                alert(turnaround);
-                                document.getElementById('circulo').style.display = 'none';
-                                processos--;
-                                document.getElementById('processo').innerHTML = '<span class="" href="#">PROCESSOS<br>' + processos + '</span>';
+                            }
+
+                        } else {
+                            document.getElementById('circulo').style.display = 'none';
+                            processos--;
+                            document.getElementById('processo').innerHTML = '<span class="" href="#">PROCESSOS<br>' + processos + '</span>';
+                            document.getElementById('memolivre').innerHTML = '<span class="" href="#">MEMÓRIA LIVRE<br>100%</span>';
+                        }
+                    } else {
+                        for(i = 0; i < espera.length; i++){
+                            if(seg >= espera[i][2]){
+                                document.getElementById(espera[i][0]).innerHTML += '<td><i class="fas fa-square-full text-warning"></i></td>';
+                                console.log(7);
+                                turnaround++;
                             }
                         }
 
-                    } else {
-                        document.getElementById('circulo').style.display = 'none';
-                        processos--;
-                        document.getElementById('processo').innerHTML = '<span class="" href="#">PROCESSOS<br>' + processos + '</span>';
-                        document.getElementById('memolivre').innerHTML = '<span class="" href="#">MEMÓRIA LIVRE<br>100%</span>';
+                        for(i = 0; i < PRIORIDADE.length; i++){
+                            if(seg >= PRIORIDADE[i][2]){
+                                document.getElementById(PRIORIDADE[i][0]).innerHTML += '<td><i class="fas fa-square-full text-warning"></i></td>';
+                                console.log(8);
+                                turnaround++;
+                            }
+                        }
+
+                        remove('fila-prontos', memo[indice][1]);
+                        document.getElementById('fila-espera').innerHTML += '<td id="espera-' + memo[indice][1] + '" width="10%" style="background-color: ' + memo[indice][0] + ';"></td>';
+                        let p = PRIORIDADE.shift();
+                        if(p[3] > 0){
+                            p[3] -= contador;
+                            espera.push(p);                           
+                        }
+                        contador = 0;
+
+                        setTimeout(prio, 1000);
                     }
                 } else {
                     contador = 0;
@@ -1638,12 +1683,12 @@
                         });
                         bloqueados.push(p);
                         bloqueados.sort(function(a, b) {
-                            return a[6]-b[6];                                   
+                           return a[6]-b[6];                                
                         });
                         prio();
                     }
                 }
-            }
+            } 
         }
 
         
