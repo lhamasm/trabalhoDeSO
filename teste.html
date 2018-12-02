@@ -108,7 +108,6 @@
                     <button id="suspender" class="btn btn-block btn-midnight" type="button" style="font-size: 0.7em;" onclick="suspenderProcessos()" disabled><strong>Suspender</strong></button>
                     <button id="prosseguir" class="btn btn-block btn-midnight" type="button" style="font-size: 0.7em;" onclick="prosseguirProcessos()" disabled><strong>Prosseguir</strong></button>
                     <button id="finalizar" class="btn btn-block btn-midnight" type="button" style="font-size: 0.7em;" onclick="finalizarProcessos()" disabled><strong>Finalizar</strong></button>
-                    <button id="prioridade" class="btn btn-block btn-midnight" type="button" data-toggle="modal" data-target="#alterar-prioridade" style="font-size: 0.7em;" disabled><strong>Prioridade</strong></button>
                 </div>
             </div>
         </div>
@@ -655,7 +654,13 @@
                         }
                         return a[2] - b[2];   
                     });
-                }                
+                } else {
+                    procelso[2] = seg;
+                    PRIORIDADE.push(proc);
+                    PRIORIDADE.sort(function(a, b){
+                        return b[6]-a[6];   
+                    });
+                }             
             }            
         }
 
@@ -758,7 +763,13 @@
                         }
                         return a[2] - b[2];   
                     });
-                } 
+                } else {
+                    proc[2] = seg;
+                    PRIORIDADE.push(proc);
+                    PRIORIDADE.sort(function(a, b){
+                        return b[6]-a[6];   
+                    });
+                }
             }
         }
 
@@ -1292,8 +1303,8 @@
                         if(EDF[0][3] > 0 ){
                             
                             if(contador <= EDF[0][3] && contador <= parseInt(document.getElementById('quantum').value)){
-                                if(seg == EDF[0][6]){
-                                    document.getElementById(EDF[0][0]).innerHTML += '<td><i class="fas fa-square-full text-success" style = "border-left: 2px solid orange;"></i></td>';                                    
+                                if(seg == EDF[0][6] + EDF[0][2]){
+                                    document.getElementById(EDF[0][0]).innerHTML += '<td style = "border-left: 2px solid orange;"><i class="fas fa-square-full text-success"></i></td>';                                    
                                 }
                                 else{
                                     document.getElementById(EDF[0][0]).innerHTML += '<td><i class="fas fa-square-full text-success"></i></td>';
@@ -1311,8 +1322,8 @@
                                 for(i = 1; i < EDF.length; i++){
                                     if(!EDF[i][4]){
                                         if(seg >= EDF[i][2]){
-                                            if(seg == EDF[i][6]){
-                                                document.getElementById(EDF[i][0]).innerHTML += '<td><i class="fas fa-square-full text-warning" style = "border-left: 2px solid orange;"></i></td>';
+                                            if(seg == EDF[0][6] + EDF[0][2]){
+                                                document.getElementById(EDF[i][0]).innerHTML += '<td style = "border-left: 2px solid orange;"><i class="fas fa-square-full text-warning"></i></td>';
                                             }
                                             else{
                                                 document.getElementById(EDF[i][0]).innerHTML += '<td><i class="fas fa-square-full text-warning"></i></td>';
@@ -1320,8 +1331,8 @@
                                             turnaround++;
                                         }
                                     } else {
-                                        if(seg == EDF[i][6]){
-                                            document.getElementById(EDF[i][0]).innerHTML += '<td><i class="fas fa-square-full text-info" style = "border-left: 2px solid orange;"></i></td>';
+                                        if(seg == EDF[0][6] + EDF[0][2]){
+                                            document.getElementById(EDF[i][0]).innerHTML += '<td  style = "border-left: 2px solid orange;"><i class="fas fa-square-full text-info"></i></td>';
                                         }
                                         else{
                                             document.getElementById(EDF[i][0]).innerHTML += '<td><i class="fas fa-square-full text-info"></i></td>';
@@ -1331,8 +1342,8 @@
                                 }
 
                                 for(i = 0; i < espera.length; i++){
-                                    if(seg == EDF[i][6]){
-                                        document.getElementById(EDF[i][0]).innerHTML += '<td><i class="fas fa-square-full text-warning" style = "border-left: 2px solid orange;"></i></td>';
+                                    if(seg == EDF[0][6] + EDF[0][2]){
+                                        document.getElementById(EDF[i][0]).innerHTML += '<td style = "border-left: 2px solid orange;"><i class="fas fa-square-full text-warning"></i></td>';
                                     }
                                     else{
                                         document.getElementById(espera[i][0]).innerHTML += '<td><i class="fas fa-square-full text-warning"></i></td>';
@@ -1369,7 +1380,7 @@
                                         pararSeTimeout = setTimeout(edf, (EDF[0][2]-seg)*1000);
                                     } else {
                                         if(seg == p[6]){
-                                            document.getElementById(p[0]).innerHTML += '<td><i class="fas fa-square-full text-danger" style = "border-left: 2px solid orange;"></i></td>';
+                                            document.getElementById(p[0]).innerHTML += '<td style = "border-left: 2px solid orange;"><i class="fas fa-square-full text-danger"></i></td>';
                                         }
                                         else{
                                             document.getElementById(p[0]).innerHTML += '<td><i class="fas fa-square-full text-danger"></i></td>';
@@ -1379,8 +1390,8 @@
                                         for(i = 0; i < EDF.length; i++){
                                             if(!EDF[i][4]){
                                                 if(EDF[i][1] != p[1] && seg >= EDF[i][2]){
-                                                    if(seg == EDF[i][6]){
-                                                        document.getElementById(EDF[i][0]).innerHTML += '<td><i class="fas fa-square-full text-warning" style = "border-left: 2px solid orange;"></i></td>';
+                                                    if(seg == EDF[0][6] + EDF[0][2]){
+                                                        document.getElementById(EDF[i][0]).innerHTML += '<td style = "border-left: 2px solid orange;"><i class="fas fa-square-full text-warning"></i></td>';
                                                     }
                                                     else{
                                                         document.getElementById(EDF[i][0]).innerHTML += '<td><i class="fas fa-square-full text-warning"></i></td>';
@@ -1388,8 +1399,8 @@
                                                     turnaround++;
                                                 }
                                             }else {
-                                                if(seg == EDF[i][6]){
-                                                    document.getElementById(EDF[i][0]).innerHTML += '<td><i class="fas fa-square-full text-warning" style = "border-left: 2px solid orange;"></i></td>';
+                                                if(seg == EDF[0][6] + EDF[0][2]){
+                                                    document.getElementById(EDF[i][0]).innerHTML += '<td style = "border-left: 2px solid orange;"><i class="fas fa-square-full text-warning"></i></td>';
                                                 }
                                                 else{
                                                     document.getElementById(EDF[i][0]).innerHTML += '<td><i class="fas fa-square-full text-info"></i></td>';
@@ -1400,7 +1411,7 @@
 
                                         for(i = 0; i < espera.length; i++){
                                             if(seg == espera[i][6]){
-                                                document.getElementById(espera[i][0]).innerHTML += '<td><i class="fas fa-square-full text-warning" style = "border-left: 2px solid orange;"></i></td>';
+                                                document.getElementById(espera[i][0]).innerHTML += '<td style = "border-left: 2px solid orange;"><i class="fas fa-square-full text-warning"></i></td>';
                                             }
                                             else{
                                                 document.getElementById(espera[i][0]).innerHTML += '<td><i class="fas fa-square-full text-warning"></i></td>';
@@ -1411,7 +1422,7 @@
                                         for(i = 0; i < parseInt(document.getElementById('sobrecarga').value)-1; i++){
                                             pararSeTimeout = setTimeout(function() {
                                                 if(seg == p[6]){
-                                                    document.getElementById(p[0]).innerHTML += '<td><i class="fas fa-square-full text-danger" style = "border-left: 2px solid orange;"></i></td>';
+                                                    document.getElementById(p[0]).innerHTML += '<td  style = "border-left: 2px solid orange;"><i class="fas fa-square-full text-danger"></i></td>';
                                                 }
                                                 else{
                                                     document.getElementById(p[0]).innerHTML += '<td><i class="fas fa-square-full text-danger"></i></td>';
@@ -1422,7 +1433,7 @@
                                                     if(!EDF[i][4]){
                                                         if(EDF[j][1] != p[1] && seg >= EDF[j][2]){
                                                             if(seg == EDF[j][6]){
-                                                                document.getElementById(EDF[i][0]).innerHTML += '<td><i class="fas fa-square-full text-warning" style = "border-left: 2px solid orange;"></i></td>';
+                                                                document.getElementById(EDF[i][0]).innerHTML += '<td  style = "border-left: 2px solid orange;"><i class="fas fa-square-full text-warning"></i></td>';
                                                             }
                                                             else{
                                                                 document.getElementById(EDF[j][0]).innerHTML += '<td><i class="fas fa-square-full text-warning"></i></td>';
@@ -1431,7 +1442,7 @@
                                                         }
                                                     }else {
                                                         if(seg == EDF[j][6]){
-                                                            document.getElementById(EDF[i][0]).innerHTML += '<td><i class="fas fa-square-full text-info" style = "border-left: 2px solid orange;"></i></td>';
+                                                            document.getElementById(EDF[i][0]).innerHTML += '<td style = "border-left: 2px solid orange;"><i class="fas fa-square-full text-info"></i></td>';
                                                         }
                                                         else{
                                                             document.getElementById(EDF[j][0]).innerHTML += '<td><i class="fas fa-square-full text-info"></i></td>';
@@ -1442,7 +1453,7 @@
 
                                                 for(j = 0; j < espera.length; j++){
                                                     if(seg == espera[j][6]){
-                                                        document.getElementById(EDF[i][0]).innerHTML += '<td><i class="fas fa-square-full text-warning" style = "border-left: 2px solid orange;"></i></td>';
+                                                        document.getElementById(EDF[i][0]).innerHTML += '<td style = "border-left: 2px solid orange;"><i class="fas fa-square-full text-warning"></i></td>';
                                                     }
                                                     else{
                                                         document.getElementById(espera[j][0]).innerHTML += '<td><i class="fas fa-square-full text-warning"></i></td>';
@@ -1474,7 +1485,7 @@
                         for(i = 0; i < espera.length; i++){
                             if(seg >= espera[i][2]){
                                 if(espera[i][6] == seg){
-                                    document.getElementById(EDF[i][0]).innerHTML += '<td><i class="fas fa-square-full text-warning" style = "border-left: 2px solid orange;"></i></td>';
+                                    document.getElementById(EDF[i][0]).innerHTML += '<td style = "border-left: 2px solid orange;"><i class="fas fa-square-full text-warning"></i></td>';
                                 }
                                 else{
                                     document.getElementById(espera[i][0]).innerHTML += '<td><i class="fas fa-square-full text-warning"></i></td>';
@@ -1486,7 +1497,7 @@
                         for(i = 0; i < EDF.length; i++){
                             if(seg >= EDF[i][2]){
                                 if(EDF[i][6] == seg){
-                                    document.getElementById(EDF[i][0]).innerHTML += '<td><i class="fas fa-square-full text-warning" style = "border-left: 2px solid orange;"></i></td>';
+                                    document.getElementById(EDF[i][0]).innerHTML += '<td style = "border-left: 2px solid orange;"><i class="fas fa-square-full text-warning"></i></td>';
                                 }
                                 else{
                                     document.getElementById(EDF[i][0]).innerHTML += '<td><i class="fas fa-square-full text-warning"></i></td>';
@@ -1510,8 +1521,8 @@
                     contador = 0;
                     if(bloqueados.length == EDF.length){
                         for(i = 0; i < bloqueados.length; i++){
-                            if(seg == EDF[i][6]){
-                                document.getElementById(EDF[i][0]).innerHTML += '<td><i class="fas fa-square-full text-info" style = "border-left: 2px solid orange;"></i></td>';
+                            if(seg == EDF[0][6] + EDF[0][2]){
+                                document.getElementById(EDF[i][0]).innerHTML += '<td style = "border-left: 2px solid orange;"><i class="fas fa-square-full text-info"></i></td>';
                             }
                             else{
                                 document.getElementById(EDF[i][0]).innerHTML += '<td><i class="fas fa-square-full text-info"></i></td>';
@@ -1571,14 +1582,25 @@
                     }
                     if (!pageFault){
                         let terminou = false;
+                        PRIORIDADE[0][5] = true;
+                        idExecutando = PRIORIDADE[0][1];
                         document.getElementById(PRIORIDADE[0][1]).style.display = 'none';
                         document.getElementById('circulo').style.display = 'block';
                         document.getElementById('circulo').style.color = PRIORIDADE[0][0];  
                         contador++;
-                        if(PRIORIDADE[0][3] != 0 ){
+                        if(PRIORIDADE[0][3] > 0 ){
                             if(contador <= PRIORIDADE[0][3] && contador <= parseInt(document.getElementById('quantum').value)){
                                 document.getElementById(PRIORIDADE[0][0]).innerHTML += '<td><i class="fas fa-square-full text-success"></i></td>';
                                 turnaround++;
+                                let pag = gerarPagAleatoria(); // gerar a pagina que será utilizada agora
+                                if(document.getElementById('paginacao').value == 'mrup'){ // se o algoritmo de paginaçao for mru
+                                    for(j=0; j<memoriaRam.length; j++){ // procurar na memoria ram
+                                       if(memoriaRam[j][0] == indice && memoriaRam[j][1] == pag){ // a pagina do processo q foi utilizada
+                                            memoriaRam[j][2] = seg; // e atribuir a ela o contador seg 
+                                            break;
+                                        }
+                                    }
+                                }  
                                 for(i = 1; i < PRIORIDADE.length; i++){
                                     if(!PRIORIDADE[i][4]){
                                         if(seg >= PRIORIDADE[i][2]){
@@ -1590,6 +1612,11 @@
                                         turnaround++;
                                     }
                                 }
+
+                                for(i = 0; i < espera.length; i++){
+                                    document.getElementById(espera[i][0]).innerHTML += '<td><i class="fas fa-square-full text-warning"></i></td>';
+                                    turnaround++;
+                                }
                                 pararSeTimeout = setTimeout(prio, 1000);
                             } else {
                                 let p = PRIORIDADE.shift();
@@ -1599,12 +1626,7 @@
                                     p[2] = seg;
                                     PRIORIDADE.push(p);
                                     PRIORIDADE.sort(function(a, b){
-                                        if(a[2] == b[2]){
-                                            let x = b[6];
-                                            let y = a[6];
-                                            return x < y ? -1 : x > y ? 1 : 0;
-                                        }
-                                        return a[2] - b[2];
+                                        return b[6] - a[6];
                                     });
                                     document.getElementById('fila-prontos').innerHTML += '<td id="' + p[1]+ '" width="10%" style="background-color:' + p[0] + ';"></td>';
                                     document.getElementById('circulo').style.display = 'none';
@@ -1631,7 +1653,12 @@
                                                 document.getElementById(PRIORIDADE[i][0]).innerHTML += '<td><i class="fas fa-square-full text-info"></i></td>';
                                                 turnaround++;
                                             }
-                                        }                            
+                                        }                
+
+                                        for(i = 0; i < espera.length; i++){
+                                            document.getElementById(espera[i][0]).innerHTML += '<td><i class="fas fa-square-full text-warning"></i></td>';
+                                            turnaround++;
+                                        }             
 
                                         for(i = 0; i < parseInt(document.getElementById('sobrecarga').value)-1; i++){
                                             pararSeTimeout = setTimeout(function() {
@@ -1649,13 +1676,18 @@
                                                         turnaround++;
                                                     }
                                                 }
+
+                                                for(i = 0; i < espera.length; i++){
+                                                    document.getElementById(espera[i][0]).innerHTML += '<td><i class="fas fa-square-full text-warning"></i></td>';
+                                                    turnaround++;
+                                                } 
                                                 
                                             }, 1000 + 1000*i);
                                         }
                                         
                                         pararSeTimeout = setTimeout(prio, parseInt(document.getElementById('sobrecarga').value) * 1000);
                                     }
-                                } else {
+                                } else if(PRIORIDADE.length == 0 && espera.length == 0 && bloqueados.length == 0){
                                     turnaround = turnaround/qtdprocessos;
                                     alert("O Turnaround médio é: " + turnaround.toFixed(2));
                                     document.getElementById('circulo').style.display = 'none';
@@ -1708,12 +1740,7 @@
                         let p = PRIORIDADE.shift();
                         PRIORIDADE.push(p);
                         PRIORIDADE.sort(function(a, b){
-                            if(a[2] == b[2]){
-                                let x = b[6];
-                                let y = a[6];
-                                return x < y ? -1 : x > y ? 1 : 0;
-                            }
-                            return a[2] - b[2];
+                            return b[6] - a[6];
                         });
                         bloqueados.push(p);
                         bloqueados.sort(function(a, b){
@@ -1807,70 +1834,82 @@
         }
 
         function criar_processo() {
-            let quadrados = '';
-            let cor = dar_cor_aleatoria();
+            if(document.getElementById('tempo-chegada').value != '' && document.getElementById('tempo-execucao').value != ''){
 
-            PID++;
-
-            document.getElementById('tabela-processos').innerHTML += '<tr onclick="selecionar_processo(this)"><td style="background-color:' + cor + ';"></td><td>' + PID + '</td><td>' + document.getElementById("tempo-chegada").value + '</td><td>' + document.getElementById("tempo-execucao").value + '</td><td>' + temporestante + '</td><td>' + document.getElementById("deadline").value + '</td><td>' + document.getElementById("PRIO").value + '</td></tr>';
-
-            document.getElementById('disco').innerHTML += '<tr><td width="10%" style="border: 0px">P' + PID + '</td><td id="' + PID + '-1"></td><td id="' + PID + '-2"></td><td id="' + PID + '-3"></td><td id="' + PID + '-4"></td><td id="' + PID + '-5"></td><td id="' + PID + '-6"></td><td id="' + PID + '-7"></td></tr>';
-
-            if (processos>=1){
-                for (i = 1; i<=7; i++){
-                    document.getElementById('linha-' + String(i)).innerHTML += '<td id = "tp-' + PID + '-' + i + '">-</td>';
+                if(document.getElementById('escalonamento').value == 'edf'){
+                    if(document.getElementById('deadline').value == ''){
+                        alert("Insira um valor de deadline");
+                        return;
+                    }
+                } else if(document.getElementById('escalonamento').value == 'prio'){
+                    if(document.getElementById('PRIO').value == ''){
+                        alert("Insira um valor de prioridade");
+                        return;
+                    }
                 }
-                document.getElementById('linha-0').innerHTML += '<td id = "tp-' + PID + '-0" style="background-color:' + cor + ';"></td>';
+                
+                let quadrados = '';
+                let cor = dar_cor_aleatoria();
+
+                PID++;
+
+                document.getElementById('tabela-processos').innerHTML += '<tr onclick="selecionar_processo(this)"><td style="background-color:' + cor + ';"></td><td>' + PID + '</td><td>' + document.getElementById("tempo-chegada").value + '</td><td>' + document.getElementById("tempo-execucao").value + '</td><td>' + temporestante + '</td><td>' + document.getElementById("deadline").value + '</td><td>' + document.getElementById("PRIO").value + '</td></tr>';
+
+                document.getElementById('disco').innerHTML += '<tr><td width="10%" style="border: 0px">P' + PID + '</td><td id="' + PID + '-1"></td><td id="' + PID + '-2"></td><td id="' + PID + '-3"></td><td id="' + PID + '-4"></td><td id="' + PID + '-5"></td><td id="' + PID + '-6"></td><td id="' + PID + '-7"></td></tr>';
+
+                if (processos>=1){
+                    for (i = 1; i<=7; i++){
+                        document.getElementById('linha-' + String(i)).innerHTML += '<td id = "tp-' + PID + '-' + i + '">-</td>';
+                    }
+                    document.getElementById('linha-0').innerHTML += '<td id = "tp-' + PID + '-0" style="background-color:' + cor + ';"></td>';
+                } else {
+                    document.getElementById('tabela-paginas').innerHTML += '<tr id="linha-0"><td id="tp-' + PID + '-0" style="background-color: ' + cor + ';"></td></tr><tr id="linha-1"><td id = "tp-' + PID + '-1">-</td></tr><tr id="linha-2"><td id = "tp-' + PID + '-2">-</td></tr><tr id="linha-3"><td id = "tp-' + PID + '-3">-</td></tr><tr id="linha-4"><td id = "tp-' + PID + '-4">-</td></tr><tr id="linha-5"><td id = "tp-' + PID + '-5">-</td></tr><tr id="linha-6"><td id = "tp-' + PID + '-6">-</td></tr><tr id="linha-7"><td id = "tp-' + PID + '-7">-</td></tr>';
+                }
+
+                processos++;
+                qtdprocessos++;
+                let posicaoPaginas = [];
+                for(i=0; i<7; i++){
+                    posicaoPaginas.push(-1);
+                }
+
+                FIFO.push([cor, PID, parseInt(document.getElementById('tempo-chegada').value), parseInt(document.getElementById('tempo-execucao').value), suspenso, executandoProcesso]);
+                RR.push([cor, PID, parseInt(document.getElementById('tempo-chegada').value), parseInt(document.getElementById('tempo-execucao').value), suspenso,executandoProcesso]);
+                EDF.push([cor, PID, parseInt(document.getElementById('tempo-chegada').value), parseInt(document.getElementById('tempo-execucao').value),suspenso, executandoProcesso,  parseInt(document.getElementById('deadline').value)]);            
+                SJF.push([cor, PID, parseInt(document.getElementById('tempo-chegada').value), parseInt(document.getElementById('tempo-execucao').value), suspenso, executandoProcesso]);  
+                PRIORIDADE.push([cor, PID, parseInt(document.getElementById('tempo-chegada').value), parseInt(document.getElementById('tempo-execucao').value), suspenso, executandoProcesso, parseInt(document.getElementById('PRIO').value)]);  
+                memo.push([cor, PID, parseInt(document.getElementById('tempo-chegada').value), parseInt(document.getElementById('tempo-execucao').value), posicaoPaginas, parseInt(document.getElementById('deadline').value), parseInt(document.getElementById('PRIO').value)]);
+
+                FIFO.sort(function(a, b) {
+                    return a[2]-b[2];
+                });
+
+                RR.sort(function(a, b) {
+                    return a[2]-b[2];
+                });
+                EDF.sort(function(a, b){
+                    if(a[2] == b[2]){
+                        let x = a[6];
+                        let y = b[6];
+                        return x < y ? -1 : x > y ? 1 : 0;
+                    }
+                    return a[2] - b[2];
+                });
+
+                SJF.sort(function(a, b){
+                    if(a[2] == b[2]){
+                        let x = a[3];
+                        let y = b[3];
+                        return x < y ? -1 : x > y ? 1 : 0;
+                    }
+                    return a[2] - b[2];
+                });
+                PRIORIDADE.sort(function(a, b){
+                    return b[6] - a[6];
+                });
             } else {
-                document.getElementById('tabela-paginas').innerHTML += '<tr id="linha-0"><td id="tp-' + PID + '-0" style="background-color: ' + cor + ';"></td></tr><tr id="linha-1"><td id = "tp-' + PID + '-1">-</td></tr><tr id="linha-2"><td id = "tp-' + PID + '-2">-</td></tr><tr id="linha-3"><td id = "tp-' + PID + '-3">-</td></tr><tr id="linha-4"><td id = "tp-' + PID + '-4">-</td></tr><tr id="linha-5"><td id = "tp-' + PID + '-5">-</td></tr><tr id="linha-6"><td id = "tp-' + PID + '-6">-</td></tr><tr id="linha-7"><td id = "tp-' + PID + '-7">-</td></tr>';
+                alert("Preencha todos os campos obrigatórios");
             }
-
-            processos++;
-            qtdprocessos++;
-            let posicaoPaginas = [];
-            for(i=0; i<7; i++){
-                posicaoPaginas.push(-1);
-            }
-
-            FIFO.push([cor, PID, parseInt(document.getElementById('tempo-chegada').value), parseInt(document.getElementById('tempo-execucao').value), suspenso, executandoProcesso]);
-            RR.push([cor, PID, parseInt(document.getElementById('tempo-chegada').value), parseInt(document.getElementById('tempo-execucao').value), suspenso,executandoProcesso]);
-            EDF.push([cor, PID, parseInt(document.getElementById('tempo-chegada').value), parseInt(document.getElementById('tempo-execucao').value),suspenso, executandoProcesso,  parseInt(document.getElementById('deadline').value)]);            
-            SJF.push([cor, PID, parseInt(document.getElementById('tempo-chegada').value), parseInt(document.getElementById('tempo-execucao').value), suspenso, executandoProcesso]);  
-            PRIORIDADE.push([cor, PID, parseInt(document.getElementById('tempo-chegada').value), parseInt(document.getElementById('tempo-execucao').value), suspenso, executandoProcesso, parseInt(document.getElementById('PRIO').value)]);  
-            memo.push([cor, PID, parseInt(document.getElementById('tempo-chegada').value), parseInt(document.getElementById('tempo-execucao').value), posicaoPaginas, parseInt(document.getElementById('deadline').value), parseInt(document.getElementById('PRIO').value)]);
-
-            FIFO.sort(function(a, b) {
-                return a[2]-b[2];
-            });
-
-            RR.sort(function(a, b) {
-                return a[2]-b[2];
-            });
-            EDF.sort(function(a, b){
-                if(a[2] == b[2]){
-                    let x = a[6];
-                    let y = b[6];
-                    return x < y ? -1 : x > y ? 1 : 0;
-                }
-                return a[2] - b[2];
-            });
-
-            SJF.sort(function(a, b){
-                if(a[2] == b[2]){
-                    let x = a[3];
-                    let y = b[3];
-                    return x < y ? -1 : x > y ? 1 : 0;
-                }
-                return a[2] - b[2];
-            });
-            PRIORIDADE.sort(function(a, b){
-                if(a[2] == b[2]){
-                    let x = b[6];
-                    let y = a[6];
-                    return x < y ? -1 : x > y ? 1 : 0;
-                }
-                return a[2] - b[2];
-            });
         }
 
         function sidebar() {
@@ -2108,8 +2147,9 @@
                         let id = colunas[1].firstChild.nodeValue;
 
                         if(id == FIFO[j][1]){
-                            FIFO[j][4] = false;    
+                            FIFO[j][4] = false;                                
                             remove('fila-suspensos', id); 
+                            document.getElementById('fila-prontos').innerHTML += '<td id="' + FIFO[j][1]+ '" width="10%" style="background-color:' + FIFO[j][0] + ';"></td>';
                             break;                     
                         }
                     }
@@ -2123,6 +2163,7 @@
                         if(id == RR[j][1]){
                             RR[j][4] = false;    
                             remove('fila-suspensos', id);   
+                            document.getElementById('fila-prontos').innerHTML += '<td id="' + RR[j][1]+ '" width="10%" style="background-color:' + RR[j][0] + ';"></td>';
                             RR.sort(function(a, b) {
                                 if(a[4] == b[4]){
                                     return a[2]-b[2];
@@ -2149,6 +2190,7 @@
                         if(id == EDF[j][1]){
                             EDF[j][4] = false;    
                             remove('fila-suspensos', id);
+                            document.getElementById('fila-prontos').innerHTML += '<td id="' + EDF[j][1]+ '" width="10%" style="background-color:' + EDF[j][0] + ';"></td>';
                             EDF.sort(function(a, b){ // ordena de novo
                                 if(a[2] == b[2]){
                                     let x = a[4];
@@ -2170,6 +2212,7 @@
                         if(id == SJF[j][1]){
                             SJF[j][4] = false;    
                             remove('fila-suspensos', id); 
+                            document.getElementById('fila-prontos').innerHTML += '<td id="' + SJF[j][1]+ '" width="10%" style="background-color:' + SJF[j][0] + ';"></td>';
                             SJF.sort(function(a, b){
                                 if (a[2] == b[2]){
                                     if (a[3]<b[3]){
@@ -2192,13 +2235,9 @@
                         if(id == PRIORIDADE[j][1]){
                             PRIORIDADE[j][4] = false;    
                             remove('fila-suspensos', id); 
+                            document.getElementById('fila-prontos').innerHTML += '<td id="' + PRIORIDADE[j][1]+ '" width="10%" style="background-color:' + PRIORIDADE[j][0] + ';"></td>';
                             PRIORIDADE.sort(function(a, b){
-                                if(a[2] == b[2]){
-                                    let x = b[6];
-                                    let y = a[6];
-                                    return x < y ? -1 : x > y ? 1 : 0;
-                                }
-                                return a[2] - b[2];
+                                return b[6]-a[6];
                             });
                             break;                     
                         }
