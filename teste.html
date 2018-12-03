@@ -620,7 +620,7 @@
                 } else if(document.getElementById('escalonamento').value == 'sjf'){
                     SJF.push(procelso);
                     SJF.sort(function(a, b){
-                        if(a[2] == b[2]){
+                        if((seg >= a[2] && seg >= b[2]) || a[2]==b[2]){
                             let x = a[3];
                             let y = b[3];
                             return x < y ? -1 : x > y ? 1 : 0;
@@ -647,12 +647,12 @@
                     procelso[2] = seg;
                     EDF.push(procelso);
                     EDF.sort(function(a, b){
-                        if(a[2] == b[2]){
+                        if((seg >= a[2] && seg >= b[2]) || a[2] == b[2]){
                             let x = a[6];
                             let y = b[6];
                             return x < y ? -1 : x > y ? 1 : 0;
                         }
-                        return a[2] - b[2];   
+                        return a[2] - b[2];
                     });
                 } else {
                     procelso[2] = seg;
@@ -729,7 +729,7 @@
                 } else if(document.getElementById('escalonamento').value == 'sjf'){
                     SJF.push(proc);
                     SJF.sort(function(a, b){
-                        if(a[2] == b[2]){
+                        if((seg >= a[2] && seg >= b[2]) || a[2]==b[2]){
                             let x = a[3];
                             let y = b[3];
                             return x < y ? -1 : x > y ? 1 : 0;
@@ -756,12 +756,12 @@
                     proc[2] = seg;
                     EDF.push(proc);
                     EDF.sort(function(a, b){
-                        if(a[2] == b[2]){
+                        if((seg >= a[2] && seg >= b[2]) || a[2] == b[2]){
                             let x = a[6];
                             let y = b[6];
                             return x < y ? -1 : x > y ? 1 : 0;
                         }
-                        return a[2] - b[2];   
+                        return a[2] - b[2];
                     });
                 } else {
                     proc[2] = seg;
@@ -903,7 +903,6 @@
                 return;
             }
             if(SJF.length > 0){
-                
                 if(!SJF[0][4]){
                     let pageFault = false;
                     let indice;
@@ -967,6 +966,14 @@
                             document.getElementById('processo').innerHTML = '<span class="" href="#">PROCESSOS<br>' + processos + '</span>';
                             if(SJF.length > 0){
                                 contador = 0;
+                                SJF.sort(function(a, b){
+                                    if((seg >= a[2] && seg >= b[2]) || a[2]==b[2]){
+                                        let x = a[3];
+                                        let y = b[3];
+                                        return x < y ? -1 : x > y ? 1 : 0;
+                                    }
+                                    return a[2] - b[2];
+                                });
                                 pararSeTimeout = setTimeout(sjf, (SJF[0][2]-seg)*1000);
                             } else if(SJF.length == 0 && espera.length == 0 && bloqueados.length == 0) {
                                 turnaround = turnaround/qtdprocessos;
@@ -1009,7 +1016,7 @@
                         let p = SJF.shift();
                         SJF.push(p);
                         SJF.sort(function(a, b){
-                            if(a[2] == b[2]){
+                            if((seg >= a[2] && seg >= b[2]) || a[2]==b[2]){
                                 let x = a[3];
                                 let y = b[3];
                                 return x < y ? -1 : x > y ? 1 : 0;
@@ -1018,7 +1025,7 @@
                         });
                         bloqueados.push(p);
                         bloqueados.sort(function(a, b){
-                            if(a[2] == b[2]){
+                            if((seg >= a[2] && seg >= b[2]) || a[2] == b[2]){
                                 let x = a[3];
                                 let y = b[3];
                                 return x < y ? -1 : x > y ? 1 : 0;
@@ -1359,13 +1366,13 @@
                                 if(p[3] > 0){
                                     p[2] = seg;
                                     EDF.push(p);
-                                    EDF.sort(function(a, b) {
-                                        if(a[2] == b[2]){
+                                    EDF.sort(function(a, b){
+                                        if((seg >= a[2] && seg >= b[2]) || a[2] == b[2]){
                                             let x = a[6];
                                             let y = b[6];
                                             return x < y ? -1 : x > y ? 1 : 0;
                                         }
-                                        return a[2] - b[2];                                  
+                                        return a[2] - b[2];
                                     });
                                     document.getElementById('fila-prontos').innerHTML += '<td id="' + p[1]+ '" width="10%" style="background-color:' + p[0] + ';"></td>';
                                     document.getElementById('circulo').style.display = 'none';
@@ -1379,7 +1386,7 @@
                                         terminou = false;
                                         pararSeTimeout = setTimeout(edf, (EDF[0][2]-seg)*1000);
                                     } else {
-                                        if(seg == p[6]){
+                                        if(seg == p[6] + p[2]){
                                             document.getElementById(p[0]).innerHTML += '<td style = "border-left: 2px solid orange;"><i class="fas fa-square-full text-danger"></i></td>';
                                         }
                                         else{
@@ -1410,7 +1417,7 @@
                                         }      
 
                                         for(i = 0; i < espera.length; i++){
-                                            if(seg == espera[i][6]){
+                                            if(seg == espera[i][6] + espera[i][2]){
                                                 document.getElementById(espera[i][0]).innerHTML += '<td style = "border-left: 2px solid orange;"><i class="fas fa-square-full text-warning"></i></td>';
                                             }
                                             else{
@@ -1421,7 +1428,7 @@
 
                                         for(i = 0; i < parseInt(document.getElementById('sobrecarga').value)-1; i++){
                                             pararSeTimeout = setTimeout(function() {
-                                                if(seg == p[6]){
+                                                if(seg == p[6] + p[2]){
                                                     document.getElementById(p[0]).innerHTML += '<td  style = "border-left: 2px solid orange;"><i class="fas fa-square-full text-danger"></i></td>';
                                                 }
                                                 else{
@@ -1432,7 +1439,7 @@
                                                 for(j = 0; j < EDF.length; j++){
                                                     if(!EDF[i][4]){
                                                         if(EDF[j][1] != p[1] && seg >= EDF[j][2]){
-                                                            if(seg == EDF[j][6]){
+                                                            if(seg == EDF[j][6] + EDF[j][2]){
                                                                 document.getElementById(EDF[i][0]).innerHTML += '<td  style = "border-left: 2px solid orange;"><i class="fas fa-square-full text-warning"></i></td>';
                                                             }
                                                             else{
@@ -1441,7 +1448,7 @@
                                                             turnaround++;
                                                         }
                                                     }else {
-                                                        if(seg == EDF[j][6]){
+                                                        if(seg == EDF[j][6] + EDF[j][2]){
                                                             document.getElementById(EDF[i][0]).innerHTML += '<td style = "border-left: 2px solid orange;"><i class="fas fa-square-full text-info"></i></td>';
                                                         }
                                                         else{
@@ -1452,7 +1459,7 @@
                                                 }
 
                                                 for(j = 0; j < espera.length; j++){
-                                                    if(seg == espera[j][6]){
+                                                    if(seg == espera[j][6] + espera[j][2]){
                                                         document.getElementById(EDF[i][0]).innerHTML += '<td style = "border-left: 2px solid orange;"><i class="fas fa-square-full text-warning"></i></td>';
                                                     }
                                                     else{
@@ -1480,11 +1487,19 @@
                             processos--;
                             document.getElementById('processo').innerHTML = '<span class="" href="#">PROCESSOS<br>' + processos + '</span>';
                             document.getElementById('memolivre').innerHTML = '<span class="" href="#">MEMÓRIA LIVRE<br>100%</span>';
+                            EDF.sort(function(a, b){
+                                if((seg >= a[2] && seg >= b[2]) || a[2] == b[2]){
+                                    let x = a[6];
+                                    let y = b[6];
+                                    return x < y ? -1 : x > y ? 1 : 0;
+                                }
+                                return a[2] - b[2];
+                            });
                         }
                     } else {
                         for(i = 0; i < espera.length; i++){
                             if(seg >= espera[i][2]){
-                                if(espera[i][6] == seg){
+                                if(espera[i][6] + espera[i][2] == seg){
                                     document.getElementById(EDF[i][0]).innerHTML += '<td style = "border-left: 2px solid orange;"><i class="fas fa-square-full text-warning"></i></td>';
                                 }
                                 else{
@@ -1496,7 +1511,7 @@
 
                         for(i = 0; i < EDF.length; i++){
                             if(seg >= EDF[i][2]){
-                                if(EDF[i][6] == seg){
+                                if(EDF[i][6] + EDF[i][2] == seg){
                                     document.getElementById(EDF[i][0]).innerHTML += '<td style = "border-left: 2px solid orange;"><i class="fas fa-square-full text-warning"></i></td>';
                                 }
                                 else{
@@ -1533,17 +1548,17 @@
                     } else {
                         let p = EDF.shift();
                         EDF.push(p);
-                        EDF.sort(function(a, b) {
-                            if(a[2] == b[2]){
+                        EDF.sort(function(a, b){
+                            if((seg >= a[2] && seg >= b[2]) || a[2] == b[2]){
                                 let x = a[6];
                                 let y = b[6];
                                 return x < y ? -1 : x > y ? 1 : 0;
                             }
-                            return a[2] - b[2];                               
+                            return a[2] - b[2];
                         });
                         bloqueados.push(p);
                         bloqueados.sort(function(a, b) {
-                            if(a[2] == b[2]){
+                            if((seg >= a[2] && seg >= b[2]) || a[2] == b[2]){
                                 let x = a[6];
                                 let y = b[6];
                                 return x < y ? -1 : x > y ? 1 : 0;
@@ -1888,7 +1903,7 @@
                     return a[2]-b[2];
                 });
                 EDF.sort(function(a, b){
-                    if(a[2] == b[2]){
+                    if((seg >= a[2] && seg >= b[2]) || a[2] == b[2]){
                         let x = a[6];
                         let y = b[6];
                         return x < y ? -1 : x > y ? 1 : 0;
@@ -1897,7 +1912,7 @@
                 });
 
                 SJF.sort(function(a, b){
-                    if(a[2] == b[2]){
+                    if((seg >= a[2] && seg >= b[2]) || a[2]==b[2]){
                         let x = a[3];
                         let y = b[3];
                         return x < y ? -1 : x > y ? 1 : 0;
@@ -2088,14 +2103,14 @@
                                 remove('fila-prontos', id);
                             }
 
-                            EDF.sort(function(a, b){ // ordena de novo
-                                if(a[2] == b[2]){
-                                    let x = a[4];
-                                    let y = b[4];
+                            EDF.sort(function(a, b){
+                                if((seg >= a[2] && seg >= b[2]) || a[2] == b[2]){
+                                    let x = a[6];
+                                    let y = b[6];
                                     return x < y ? -1 : x > y ? 1 : 0;
                                 }
                                 return a[2] - b[2];
-                            }); 
+                            });
                             break;      
                         }   
                     }
@@ -2191,10 +2206,10 @@
                             EDF[j][4] = false;    
                             remove('fila-suspensos', id);
                             document.getElementById('fila-prontos').innerHTML += '<td id="' + EDF[j][1]+ '" width="10%" style="background-color:' + EDF[j][0] + ';"></td>';
-                            EDF.sort(function(a, b){ // ordena de novo
-                                if(a[2] == b[2]){
-                                    let x = a[4];
-                                    let y = b[4];
+                            EDF.sort(function(a, b){
+                                if((seg >= a[2] && seg >= b[2]) || a[2] == b[2]){
+                                    let x = a[6];
+                                    let y = b[6];
                                     return x < y ? -1 : x > y ? 1 : 0;
                                 }
                                 return a[2] - b[2];
@@ -2214,13 +2229,12 @@
                             remove('fila-suspensos', id); 
                             document.getElementById('fila-prontos').innerHTML += '<td id="' + SJF[j][1]+ '" width="10%" style="background-color:' + SJF[j][0] + ';"></td>';
                             SJF.sort(function(a, b){
-                                if (a[2] == b[2]){
-                                    if (a[3]<b[3]){
-                                        return -1;
-                                    } 
-                                    return 0;
+                                if((seg >= a[2] && seg >= b[2]) || a[2]==b[2]){
+                                    let x = a[3];
+                                    let y = b[3];
+                                    return x < y ? -1 : x > y ? 1 : 0;
                                 }
-                                return a[2]-b[2];
+                                return a[2] - b[2];
                             });
                             break;                     
                         }
